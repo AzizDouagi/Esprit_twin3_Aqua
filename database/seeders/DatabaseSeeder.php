@@ -2,7 +2,8 @@
 
 namespace Database\Seeders;
 
-use App\Models\User;
+use App\Models\Incident;
+use App\Models\Infrastructure;
 use Illuminate\Database\Console\Seeds\WithoutModelEvents;
 use Illuminate\Database\Seeder;
 
@@ -15,11 +16,20 @@ class DatabaseSeeder extends Seeder
      */
     public function run(): void
     {
-        // User::factory(10)->create();
+        $infrastructures = Infrastructure::factory(12)->create();
 
-        User::factory()->create([
-            'name' => 'Test User',
-            'email' => 'test@example.com',
-        ]);
+        Incident::factory(36)
+            ->recycle($infrastructures)
+            ->create();
+
+        Incident::factory()
+            ->recycle($infrastructures)
+            ->create([
+                'titre' => 'Contamination critique détectée au réservoir principal',
+                'type' => 'Contamination',
+                'gravite' => 'Critique',
+                'statut' => 'Ouvert',
+                'date_incident' => now(),
+            ]);
     }
 }
