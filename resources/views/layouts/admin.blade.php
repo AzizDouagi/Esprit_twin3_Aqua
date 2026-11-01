@@ -41,9 +41,13 @@
                 <span class="brand-mark"><i class="bi bi-droplet-half"></i></span>
                 AquaSecure
             </a>
-            <a class="btn btn-sm btn-outline-light" href="{{ route('front.home') }}">
-                <i class="bi bi-globe2 me-1"></i> FrontOffice
-            </a>
+            <div class="d-flex align-items-center gap-3">
+                <a class="btn btn-sm btn-outline-light" href="{{ route('front.home') }}">
+                    <i class="bi bi-globe2 me-1"></i> FrontOffice
+                </a>
+                @stack('navbar-extra')
+                @include('partials.user-menu', ['light' => true])
+            </div>
         </div>
     </nav>
     <div class="container-fluid">
@@ -59,6 +63,12 @@
                     <a class="nav-link {{ request()->routeIs('incidents.*') ? 'active' : '' }}" href="{{ route('incidents.index') }}">
                         <i class="bi bi-exclamation-octagon me-2"></i>Incidents
                     </a>
+                    @can('users.manage')
+                        <a class="nav-link {{ request()->routeIs('admin.users.*') ? 'active' : '' }}" href="{{ route('admin.users.index') }}">
+                            <i class="bi bi-people me-2"></i>Utilisateurs
+                        </a>
+                    @endcan
+                    @stack('sidebar-extra')
                 </nav>
             </aside>
             <main class="col-lg-10 py-4">
