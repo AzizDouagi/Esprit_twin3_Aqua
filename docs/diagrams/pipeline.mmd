@@ -1,0 +1,15 @@
+flowchart TB
+    subgraph DEV["1. Développer et vérifier"]
+        direction LR
+        A["Branche + PR"] --> B["CI PHP 8.2 / 8.3<br/>MySQL, Pint, PHPStan"] --> C["Tests et couverture<br/>Vite, audits, build Docker"]
+    end
+    subgraph CD["2. Préparer une livraison"]
+        direction LR
+        D["main ou tag v*<br/>CI réutilisée"] --> E["GHCR : app + web<br/>SHA / semver / latest"] --> F["Activation SSH<br/>DEPLOY_ENABLED=true"]
+    end
+    subgraph DEPLOY["3. Promouvoir la même image"]
+        direction LR
+        G["Staging : SSH<br/>backup, migrate, up, smoke"] --> H["Tag v* + approbation<br/>environnement GitHub"] --> I["Production : SSH<br/>up, health et smoke"]
+    end
+    DEV --> CD --> DEPLOY
+    DEPLOY -->|Échec démarrage ou smoke| J["Retour aux images précédentes si disponibles<br/>Schéma DB conservé : vérifier la compatibilité"]
