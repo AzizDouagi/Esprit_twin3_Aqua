@@ -35,7 +35,7 @@ EXPOSE 9000
 ENTRYPOINT ["aquasecure-entrypoint"]
 CMD ["php-fpm", "-F"]
 
-FROM nginxinc/nginx-unprivileged:1.28-alpine AS web
+FROM nginxinc/nginx-unprivileged:1.31-alpine AS web
 COPY docker/nginx.conf /etc/nginx/conf.d/default.conf
 COPY --from=dependencies /var/www/html/public /var/www/html/public
 COPY --from=frontend /build/public/build /var/www/html/public/build
