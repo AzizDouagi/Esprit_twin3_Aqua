@@ -9,3 +9,5 @@ Artisan::command('inspire', function () {
 })->purpose('Display an inspiring quote');
 
 Schedule::command('maintenances:rappels')->dailyAt('07:00')->withoutOverlapping();
+
+Schedule::command('mesures:detect-anomalies')->hourly()->withoutOverlapping();
