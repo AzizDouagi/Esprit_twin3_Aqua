@@ -147,3 +147,12 @@ Le PDF `docs/AquaSecure_DevOps.pdf` utilise les images PNG locales, CommonMark e
 ## Références techniques
 
 [Ordre de démarrage Compose](https://docs.docker.com/compose/how-tos/startup-order/) ; [déploiement Laravel 12](https://laravel.com/framework/docs/12.x/deployment) ; [Docker build-push-action](https://github.com/docker/build-push-action) ; [artefacts GitHub Actions](https://docs.github.com/en/actions/how-tos/manage-workflow-runs/download-workflow-artifacts). Ces références décrivent les mécanismes employés ; les fichiers du dépôt précisent les choix AquaSecure.
+
+## Dossier PDF livrable
+
+`docs/AquaSecure_DevOps.pdf` est généré depuis `docs/devops-report.html` (diagrammes `devops-process` et `pipeline-cicd`, captures terminal `docs/evidence/terminal-*.png`) :
+
+```bash
+sh scripts/render-diagrams.sh
+"/Applications/Google Chrome.app/Contents/MacOS/Google Chrome" --headless=new --no-pdf-header-footer --print-to-pdf=docs/AquaSecure_DevOps.pdf "file://$PWD/docs/devops-report.html"
+```
