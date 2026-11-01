@@ -5,8 +5,8 @@ namespace App\Http\Controllers;
 use App\Http\Requests\StoreInfrastructureRequest;
 use App\Http\Requests\UpdateInfrastructureRequest;
 use App\Models\Infrastructure;
-use Illuminate\Http\Request;
 use Illuminate\Http\RedirectResponse;
+use Illuminate\Http\Request;
 use Illuminate\View\View;
 
 class InfrastructureController extends Controller
@@ -16,6 +16,8 @@ class InfrastructureController extends Controller
      */
     public function index(Request $request): View
     {
+        $this->authorize('viewAny', Infrastructure::class);
+
         $search = $request->string('search')->toString();
         $etat = $request->string('etat')->toString();
 
@@ -43,6 +45,8 @@ class InfrastructureController extends Controller
      */
     public function create(): View
     {
+        $this->authorize('create', Infrastructure::class);
+
         return view('infrastructures.create', [
             'types' => Infrastructure::TYPES,
             'etats' => Infrastructure::ETATS,
@@ -66,6 +70,8 @@ class InfrastructureController extends Controller
      */
     public function show(Infrastructure $infrastructure): View
     {
+        $this->authorize('view', $infrastructure);
+
         $infrastructure->load([
             'incidents' => fn ($query) => $query->latest('date_incident')->latest(),
         ]);
@@ -78,6 +84,8 @@ class InfrastructureController extends Controller
      */
     public function edit(Infrastructure $infrastructure): View
     {
+        $this->authorize('update', $infrastructure);
+
         return view('infrastructures.edit', [
             'infrastructure' => $infrastructure,
             'types' => Infrastructure::TYPES,
@@ -102,6 +110,8 @@ class InfrastructureController extends Controller
      */
     public function destroy(Infrastructure $infrastructure): RedirectResponse
     {
+        $this->authorize('delete', $infrastructure);
+
         $infrastructure->delete();
 
         return redirect()

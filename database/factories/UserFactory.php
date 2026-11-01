@@ -3,9 +3,11 @@
 namespace Database\Factories;
 
 use App\Models\User;
+use Database\Seeders\RolesAndPermissionsSeeder;
 use Illuminate\Database\Eloquent\Factories\Factory;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Str;
+use Spatie\Permission\PermissionRegistrar;
 
 /**
  * @extends Factory<User>
@@ -30,6 +32,7 @@ class UserFactory extends Factory
             'email_verified_at' => now(),
             'password' => static::$password ??= Hash::make('password'),
             'remember_token' => Str::random(10),
+            'actif' => true,
         ];
     }
 
@@ -41,5 +44,29 @@ class UserFactory extends Factory
         return $this->state(fn (array $attributes) => [
             'email_verified_at' => null,
         ]);
+    }
+
+    public function role(string $role): static
+    {
+        return $this->afterCreating(function (User $user) use ($role): void {
+            app(PermissionRegistrar::class)->forgetCachedPermissions();
+            (new RolesAndPermissionsSeeder)->run();
+            $user->assignRole($role);
+        });
+    }
+
+    public function admin(): static
+    {
+        return $this->role(User::ROLE_ADMIN);
+    }
+
+    public function technicien(): static
+    {
+        return $this->role(User::ROLE_TECHNICIEN);
+    }
+
+    public function simpleUser(): static
+    {
+        return $this->role(User::ROLE_USER);
     }
 }

@@ -1,0 +1,5 @@
+@extends('errors.layout')
+@section('code', '503')
+@section('icon', 'cone-striped')
+@section('title', 'Maintenance en cours')
+@section('message', 'AquaSecure revient très bientôt.')

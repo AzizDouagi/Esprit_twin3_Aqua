@@ -1,0 +1,5 @@
+@extends('errors.layout')
+@section('code', '429')
+@section('icon', 'hourglass-split')
+@section('title', 'Trop de requêtes')
+@section('message', 'Veuillez patienter quelques instants avant de réessayer.')

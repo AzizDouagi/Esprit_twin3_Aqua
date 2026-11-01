@@ -6,8 +6,8 @@ use App\Http\Requests\StoreIncidentRequest;
 use App\Http\Requests\UpdateIncidentRequest;
 use App\Models\Incident;
 use App\Models\Infrastructure;
-use Illuminate\Http\Request;
 use Illuminate\Http\RedirectResponse;
+use Illuminate\Http\Request;
 use Illuminate\View\View;
 
 class IncidentController extends Controller
@@ -17,6 +17,8 @@ class IncidentController extends Controller
      */
     public function index(Request $request): View
     {
+        $this->authorize('viewAny', Incident::class);
+
         $search = $request->string('search')->toString();
         $statut = $request->string('statut')->toString();
         $gravite = $request->string('gravite')->toString();
@@ -49,6 +51,8 @@ class IncidentController extends Controller
      */
     public function create(): View
     {
+        $this->authorize('create', Incident::class);
+
         return view('incidents.create', [
             'types' => Incident::TYPES,
             'gravites' => Incident::GRAVITES,
@@ -74,6 +78,8 @@ class IncidentController extends Controller
      */
     public function show(Incident $incident): View
     {
+        $this->authorize('view', $incident);
+
         $incident->load('infrastructure');
 
         return view('incidents.show', compact('incident'));
@@ -84,6 +90,8 @@ class IncidentController extends Controller
      */
     public function edit(Incident $incident): View
     {
+        $this->authorize('update', $incident);
+
         return view('incidents.edit', [
             'incident' => $incident,
             'types' => Incident::TYPES,
@@ -110,6 +118,8 @@ class IncidentController extends Controller
      */
     public function destroy(Incident $incident): RedirectResponse
     {
+        $this->authorize('delete', $incident);
+
         $incident->delete();
 
         return redirect()
