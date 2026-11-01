@@ -20,7 +20,7 @@ Le fallback local est explicitement marqué `degraded`. Désactiver avec `AI_FAL
 - Risque : heuristique explicable bornée de 0 à 100, indépendante du fournisseur. Explication textuelle facultative. Dashboard déjà relié au même service.
 - Anomalies : seuils opérationnels dans `config/aquasecure.php`, puis z-score sur les 30 jours antérieurs (au plus 1000 points, minimum 20) ou écart relatif >35 % sur les 12 points précédents. Le point courant et le futur sont exclus. Une série constante suivie d’une rupture est signalée. Ces seuils sont pédagogiques et doivent être calibrés sur le terrain ; ils ne certifient pas la potabilité.
 - `php artisan mesures:detect-anomalies` : exécution horaire, marquage des relevés et suggestions uniques par mesure ; aucune ouverture automatique. Un technicien valide dans `/admin/ia/anomalies`, puis ajuste type et gravité. Une suggestion traitée ne peut pas être validée deux fois.
-- Chat back office v1.0 : trois outils Eloquent définis dans `ReadOnlyTools`, statistiques agrégées, dix derniers incidents sans description ni identité, état/dernier relevé d’une infrastructure. Aucun SQL libre, outil d’écriture, shell, navigation ou action distante.
+- Chat back office : cinq outils Eloquent en lecture seule définis dans `ReadOnlyTools` (`network_stats`, `recent_incidents`, `find_infrastructures`, `infrastructure_status`, `risk_ranking`), arguments validés et paramètres inconnus refusés ; dix derniers incidents sans description ni identité, état/dernier relevé et score de risque d’une infrastructure. Aucun SQL libre, outil d’écriture, shell, navigation ou action distante.
 
 ## Calcul du risque
 
