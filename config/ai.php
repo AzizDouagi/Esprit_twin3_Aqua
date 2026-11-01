@@ -2,7 +2,7 @@
 
 return [
     /*
-    | Fournisseur IA : "anthropic" (Claude) ou "fake" (heuristiques locales déterministes, hors ligne).
+    | Fournisseur IA : "anthropic" (Claude), "ollama" (modèle local) ou "fake" (heuristiques locales déterministes, hors ligne).
     | Sans clé API, le fournisseur "fake" est utilisé automatiquement.
     */
     'provider' => env('AI_PROVIDER', 'fake'),
@@ -25,5 +25,13 @@ return [
     // En cas d'échec du fournisseur réel, bascule sur le fournisseur local (réponse marquée "dégradée").
     'fallback_to_fake' => (bool) env('AI_FALLBACK', true),
 
-    'chat' => ['max_tool_rounds' => 4],
+    'ollama' => [
+        'base_url' => env('OLLAMA_BASE_URL', 'http://127.0.0.1:11434'),
+        'model' => env('OLLAMA_MODEL', 'gemma4:latest'),
+        'timeout' => (int) env('OLLAMA_TIMEOUT', 60),
+    ],
+    'chat' => [
+        'provider' => env('AI_CHAT_PROVIDER'),
+        'max_tool_rounds' => 4,
+    ],
 ];

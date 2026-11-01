@@ -41,6 +41,6 @@ class FakeProvider implements AiProvider
 
     public function chat(string $system, array $messages, array $tools, callable $runTool): string
     {
-        return 'État du réseau (outil de lecture seule) : '.json_encode($runTool('network_stats', []), JSON_UNESCAPED_UNICODE | JSON_THROW_ON_ERROR);
+        return app(LocalChatResponder::class)->respond($messages, $runTool);
     }
 }
