@@ -22,3 +22,11 @@
 Homestead.json
 Homestead.yaml
 Thumbs.db
+
+.env.*
+!.env.example
+!.env.docker.example
+!.env.production.example
+/coverage
+/artifacts
+/phpstan-result-cache.php
