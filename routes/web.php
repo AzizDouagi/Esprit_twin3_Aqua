@@ -1,6 +1,12 @@
 <?php
 
 use App\Http\Controllers\Admin\UserController;
+use App\Http\Controllers\AI\AnomalyController;
+use App\Http\Controllers\AI\ChatController;
+use App\Http\Controllers\AI\ClassifyIncidentController;
+use App\Http\Controllers\AI\IncidentSummaryController;
+use App\Http\Controllers\AI\MonthlyReportController;
+use App\Http\Controllers\AI\RiskScoreController;
 use App\Http\Controllers\DashboardController;
 use App\Http\Controllers\DeclarationController;
 use App\Http\Controllers\EspaceController;
@@ -76,4 +82,18 @@ Route::prefix('admin')->middleware(['auth', 'verified', 'permission:admin.access
         Route::put('/{user}/actif', [UserController::class, 'toggleActif'])->name('actif');
         Route::delete('/{user}', [UserController::class, 'destroy'])->name('destroy');
     });
+});
+
+Route::middleware(['auth', 'verified', 'permission:ai.use'])->prefix('ia')->name('ai.')->group(function (): void {
+    Route::post('classer', ClassifyIncidentController::class)->name('classify');
+});
+Route::middleware(['auth', 'verified', 'permission:admin.access', 'permission:ai.use'])->prefix('admin/ia')->name('ai.')->group(function (): void {
+    Route::post('incidents/{incident}/resume', IncidentSummaryController::class)->name('summary');
+    Route::get('infrastructures/{infrastructure}/rapport', MonthlyReportController::class)->name('report');
+    Route::get('infrastructures/{infrastructure}/risque', RiskScoreController::class)->name('risk');
+    Route::post('infrastructures/{infrastructure}/risque', RiskScoreController::class)->name('risk.explain');
+    Route::get('chat', [ChatController::class, 'index'])->name('chat');
+    Route::post('chat', [ChatController::class, 'store'])->name('chat.store');
+    Route::get('anomalies', [AnomalyController::class, 'index'])->name('anomalies');
+    Route::post('anomalies/{suggestion}/accepter', [AnomalyController::class, 'accept'])->name('anomalies.accept');
 });

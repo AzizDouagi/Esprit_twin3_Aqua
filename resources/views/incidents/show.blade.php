@@ -23,7 +23,7 @@
             <div class="col-md-4"><div class="text-secondary small">Résolu le</div><div>{{ $incident->resolu_le?->format('d/m/Y H:i') ?? '—' }}</div></div>
             <div class="col-12"><div class="text-secondary small">Description</div><p class="mb-0">{{ $incident->description }}</p></div>
         </div>
-        @stack('incident-ai')
+        @can('ai.use')<form method="POST" action="{{ route('ai.summary', $incident) }}" class="mt-3">@csrf<button class="btn btn-outline-primary">Générer le résumé IA</button></form>@endcan
     </section>
 
     <div class="row g-4">
