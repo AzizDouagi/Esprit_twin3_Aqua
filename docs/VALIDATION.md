@@ -92,3 +92,9 @@ Les captures ont été prises avant la dernière réinitialisation de la base de
 Créer un fichier vide : `mktemp /tmp/aquasecure-validation.XXXXXX`. Dans un terminal consacré à la validation, définir DB_CONNECTION=sqlite, DB_DATABASE égal au chemin obtenu et DB_URL vide. Vérifier ces valeurs avant `migrate:fresh --seed --force`, puis conserver les mêmes variables pour le serveur, le détecteur et les comptages. Garder le port local libre ; lancer ensuite scripts/smoke.py avec ce port. Utiliser les comptes démo et le provider fake. Les tests PHPUnit ordinaires utilisent une base de test en mémoire via phpunit.xml lorsque ces variables ne sont pas exportées dans leur processus.
 
 Les procédures d’installation et de livraison sont dans [README](../README.md), [DEVOPS](DEVOPS.md) et [RAPPORT_FINAL](RAPPORT_FINAL.md).
+
+## Preuves complémentaires (audit indépendant)
+
+- Images `app` et `web` construites localement, pile Compose démarrée : tous les services healthy, `/up` et `/health` répondent 200.
+- Couverture PCOV (PHP 8.3, avec extension GD) : lignes 86,9 %, méthodes 78,5 %.
+- Tests API ajoutés : jeton révoqué, déclarant limité à ses incidents, 404 JSON.
