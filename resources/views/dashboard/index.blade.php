@@ -112,8 +112,8 @@
     </section>
 
 @push('scripts')
-    <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.7/dist/chart.umd.min.js"></script>
     <script>
+        document.addEventListener('DOMContentLoaded', function () {
         new Chart(document.getElementById('chart-mois'), {
             type: 'bar',
             data: { labels: @json(array_keys($parMois)), datasets: [{ label: 'Incidents', data: @json(array_values($parMois)), backgroundColor: '#0d6efd' }] },
@@ -123,6 +123,7 @@
             type: 'doughnut',
             data: { labels: @json(array_keys($parGravite)), datasets: [{ data: @json(array_values($parGravite)), backgroundColor: ['#198754', '#0dcaf0', '#ffc107', '#dc3545'] }] },
         });
+            });
     </script>
 @endpush
 @endsection
