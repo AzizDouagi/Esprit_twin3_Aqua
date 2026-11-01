@@ -37,11 +37,19 @@
                 <div class="navbar-nav ms-auto align-items-lg-center gap-lg-2">
                     <a class="nav-link {{ request()->routeIs('front.home') ? 'active' : '' }}" href="{{ route('front.home') }}">Accueil</a>
                     <a class="nav-link {{ request()->routeIs('front.infrastructures.*') ? 'active' : '' }}" href="{{ route('front.infrastructures.index') }}">Infrastructures</a>
-                    <a class="btn btn-sm btn-aqua" href="{{ route('dashboard') }}"><i class="bi bi-speedometer2 me-1"></i>BackOffice</a>
+                    @auth
+                        <a class="nav-link {{ request()->routeIs('espace.*') ? 'active' : '' }}" href="{{ route('espace.index') }}">Mon espace</a>
+                        @can('admin.access')
+                            <a class="btn btn-sm btn-aqua" href="{{ route('dashboard') }}"><i class="bi bi-speedometer2 me-1"></i>BackOffice</a>
+                        @endcan
+                    @endauth
+                    @stack('navbar-extra')
+                    @include('partials.user-menu')
                 </div>
             </div>
         </div>
     </nav>
+    <div class="container pt-3">@include('partials.alerts')</div>
     @yield('content')
     <footer class="py-4 bg-white border-top">
         <div class="container d-flex flex-column flex-md-row justify-content-between gap-2 small text-secondary">
