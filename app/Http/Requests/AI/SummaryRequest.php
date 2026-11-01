@@ -8,7 +8,9 @@ class SummaryRequest extends FormRequest
 {
     public function authorize(): bool
     {
-        return ($this->user()?->can('ai.use') ?? false) && ($this->user()?->can('view', $this->route('incident')) ?? false);
+        $user = $this->user();
+
+        return $user !== null && $user->can('ai.use') && $user->can('view', $this->route('incident'));
     }
 
     public function rules(): array

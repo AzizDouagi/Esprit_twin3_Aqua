@@ -8,7 +8,9 @@ class ClassifyIncidentRequest extends FormRequest
 {
     public function authorize(): bool
     {
-        return ($this->user()?->can('ai.use') ?? false) && ($this->user()?->can('incidents.report') ?? false);
+        $user = $this->user();
+
+        return $user !== null && $user->can('ai.use') && $user->can('incidents.report');
     }
 
     public function rules(): array

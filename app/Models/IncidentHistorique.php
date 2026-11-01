@@ -12,11 +12,13 @@ class IncidentHistorique extends Model
 
     protected $fillable = ['incident_id', 'user_id', 'champ', 'ancienne_valeur', 'nouvelle_valeur'];
 
+    /** @return BelongsTo<Incident, $this> */
     public function incident(): BelongsTo
     {
         return $this->belongsTo(Incident::class);
     }
 
+    /** @return BelongsTo<User, $this> */
     public function auteur(): BelongsTo
     {
         return $this->belongsTo(User::class, 'user_id');

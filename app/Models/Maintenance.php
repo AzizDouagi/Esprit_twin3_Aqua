@@ -7,7 +7,13 @@ use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
+use Illuminate\Support\Carbon;
 
+/**
+ * @property Carbon $date_prevue
+ * @property Carbon|null $date_realisee
+ * @property Carbon|null $rappel_envoye_le
+ */
 class Maintenance extends Model
 {
     /** @use HasFactory<MaintenanceFactory> */
@@ -29,11 +35,13 @@ class Maintenance extends Model
         ];
     }
 
+    /** @return BelongsTo<Infrastructure, $this> */
     public function infrastructure(): BelongsTo
     {
         return $this->belongsTo(Infrastructure::class)->withTrashed();
     }
 
+    /** @return BelongsTo<User, $this> */
     public function technicien(): BelongsTo
     {
         return $this->belongsTo(User::class, 'technicien_id');

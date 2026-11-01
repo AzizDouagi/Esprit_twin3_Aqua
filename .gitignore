@@ -30,3 +30,6 @@ Thumbs.db
 /coverage
 /artifacts
 /phpstan-result-cache.php
+/.release*
+/.deploy.lock
+/backups
