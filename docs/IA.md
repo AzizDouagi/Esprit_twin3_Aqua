@@ -1,5 +1,11 @@
 # Intelligence artificielle AquaSecure
 
+## Mise à jour v1.1 — assistant Ollama
+
+Le chatbot peut utiliser un fournisseur indépendant `AI_CHAT_PROVIDER=ollama` et le modèle local `OLLAMA_MODEL=gemma4:latest`. Les conversations ont été testées avec le vrai service local, sans clé externe. Le modèle reçoit les chiffres courants puis peut demander des recherches via cinq outils validés. Le mode de secours répond désormais selon la question, sans renvoyer un objet JSON. L’interface affiche des sources, les messages séparément et la progression, et permet d’interrompre, de réessayer ou de recommencer une conversation.
+
+La documentation ci-dessous décrit aussi le socle v1.0 ; le comportement actuel du chatbot et sa validation sont détaillés dans [ASSISTANT.md](ASSISTANT.md). Les autres fonctions gardent AI_PROVIDER, fake par défaut. Le chatbot peut donc être génératif avec Ollama pendant que les boutons de classification restent en mode démonstration.
+
 ## Exécution et fournisseurs
 
 `AI_PROVIDER=fake` est le défaut sans réseau : classification par mots-clés, textes issus de gabarits déterministes et chatbot utilisant les statistiques du réseau. Ce mode n’est pas un modèle entraîné. `AI_PROVIDER=anthropic` utilise l’API Messages avec une clé `ANTHROPIC_API_KEY`, le modèle configurable `AI_MODEL=claude-sonnet-5-5`, un timeout de 20 secondes et une limite de sortie de 1024 tokens. Références officielles vérifiées le 1 novembre 2026 : [modèles](https://platform.claude.com/docs/en/models/overview), [Messages API](https://platform.claude.com/docs/en/api/messages/create). La skill claude-api demandée n’était pas installée ; intégration directe via le client HTTP Laravel.
@@ -14,7 +20,7 @@ Le fallback local est explicitement marqué `degraded`. Désactiver avec `AI_FAL
 - Risque : heuristique explicable bornée de 0 à 100, indépendante du fournisseur. Explication textuelle facultative. Dashboard déjà relié au même service.
 - Anomalies : seuils opérationnels dans `config/aquasecure.php`, puis z-score sur les 30 jours antérieurs (au plus 1000 points, minimum 20) ou écart relatif >35 % sur les 12 points précédents. Le point courant et le futur sont exclus. Une série constante suivie d’une rupture est signalée. Ces seuils sont pédagogiques et doivent être calibrés sur le terrain ; ils ne certifient pas la potabilité.
 - `php artisan mesures:detect-anomalies` : exécution horaire, marquage des relevés et suggestions uniques par mesure ; aucune ouverture automatique. Un technicien valide dans `/admin/ia/anomalies`, puis ajuste type et gravité. Une suggestion traitée ne peut pas être validée deux fois.
-- Chat back office : trois outils Eloquent définis dans `ReadOnlyTools`, statistiques agrégées, dix derniers incidents sans description ni identité, état/dernier relevé d’une infrastructure. Aucun SQL libre, outil d’écriture, shell, navigation ou action distante.
+- Chat back office v1.0 : trois outils Eloquent définis dans `ReadOnlyTools`, statistiques agrégées, dix derniers incidents sans description ni identité, état/dernier relevé d’une infrastructure. Aucun SQL libre, outil d’écriture, shell, navigation ou action distante.
 
 ## Calcul du risque
 

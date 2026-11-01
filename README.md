@@ -1,6 +1,6 @@
 # AquaSecure
 
-Application Laravel 12 de supervision d’infrastructures hydrauliques : infrastructures, mesures, maintenance, incidents et aide à la décision. Projet pédagogique d’Aziz Douagi, 5TWIN ESPRIT. Version finale locale : **v1.0.0**.
+Application Laravel 12 de supervision d’infrastructures hydrauliques : infrastructures, mesures, maintenance, incidents et aide à la décision. Projet pédagogique d’Aziz Douagi, 5TWIN ESPRIT. Version locale : **v1.1.0**.
 
 ## Fonctionnalités
 
@@ -12,6 +12,21 @@ Application Laravel 12 de supervision d’infrastructures hydrauliques : infrast
 - Dashboard : KPI, MTTR depuis la création jusqu’à résolution, incidents par mois/gravité, top infrastructures à risque.
 - IA : classification, résumé, bilan mensuel PDF, explication du risque, anomalies statistiques avec validation humaine et chatbot à outils de lecture. Provider **fake déterministe par défaut**, sans clé ni réseau.
 - DevOps : images non-root, Compose local/production, CI PHP 8.2/8.3, qualité, couverture en CI, publication GHCR, déploiement SSH conditionnel et rollback documenté.
+
+## Assistant local avec Ollama
+
+Le chatbot dispose d’une interface de conversation, de suggestions, de sources consultées et d’un historique conservé dans l’onglet. Il utilise un vrai modèle local si AI_CHAT_PROVIDER=ollama ; les autres fonctions IA gardent leur propre fournisseur.
+
+```bash
+# Dans un terminal, si le service Ollama n’est pas déjà démarré :
+ollama serve
+# Seulement si le modèle n’est pas installé :
+ollama pull gemma4
+```
+
+Dans `.env` : `AI_CHAT_PROVIDER=ollama`, `OLLAMA_MODEL=gemma4:latest`, `OLLAMA_BASE_URL=http://127.0.0.1:11434`. Puis `php artisan config:clear` et ouvrir `/admin/ia/chat`. Dans cette session, Ollama a été démarré et le modèle déjà installé est activé. Les réponses réelles ont été vérifiées, notamment les questions de suivi et les chiffres du réseau. Si le modèle manque ou ne répond pas, une réponse de secours ciblée est signalée dans la conversation. Le mode fake ne renvoie plus de JSON brut.
+
+Guide, tests et limites : [Assistant v1.1](docs/ASSISTANT.md). Les résultats v1.0 dans le rapport final restent des preuves historiques.
 
 ## Prérequis
 
@@ -122,7 +137,7 @@ Le smoke HTTP exige une base de démonstration seedée avec les comptes ci-dessu
 
 ## Workflow Git
 
-Une branche par phase, commits Conventional Commits avec Co-Authored-By, vérifications puis merge `--no-ff` sur main et tag de version. Tags historiques : v0.1.0 utilisateurs, v0.2.0 infrastructures, v0.3.0 incidents, v0.4.0 API/dashboard, v0.5.0 IA, v0.6.0 DevOps, v1.0.0 finalisation. Les branches et tags sont locaux tant qu’ils ne sont pas poussés.
+Une branche par phase, commits Conventional Commits avec Co-Authored-By, vérifications puis merge `--no-ff` sur main et tag de version. Tags historiques : v0.1.0 utilisateurs, v0.2.0 infrastructures, v0.3.0 incidents, v0.4.0 API/dashboard, v0.5.0 IA, v0.6.0 DevOps, v1.0.0 finalisation, v1.1.0 assistant Ollama. Les branches et tags sont locaux tant qu’ils ne sont pas poussés.
 
 ```bash
 git config core.hooksPath .githooks

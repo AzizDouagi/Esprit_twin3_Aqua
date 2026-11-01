@@ -85,7 +85,7 @@
                         </a>
                     @endcan
                     @can('ai.use')
-                        <a class="nav-link" href="{{ route('ai.chat') }}"><i class="bi bi-chat-dots me-2"></i>Assistant IA</a>
+                        <a class="nav-link {{ request()->routeIs('ai.chat*') ? 'active' : '' }}" href="{{ route('ai.chat') }}"><i class="bi bi-chat-dots me-2"></i>Assistant IA</a>
                         <a class="nav-link" href="{{ route('ai.anomalies') }}"><i class="bi bi-activity me-2"></i>Anomalies</a>
                     @endcan
                     @stack('sidebar-extra')
