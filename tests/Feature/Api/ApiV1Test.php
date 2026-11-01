@@ -111,4 +111,27 @@ class ApiV1Test extends TestCase
             ->assertCreated()->json('data.id');
         $this->getJson("/api/v1/mesures/{$id}")->assertOk()->assertJsonPath('data.ph', 7.2);
     }
+
+    public function test_revoked_token_is_rejected_and_reporter_sees_only_own_incident(): void
+    {
+        $user = User::factory()->create(['password' => 'secret-pass-1']);
+        $token = $this->postJson('/api/v1/auth/token', ['email' => $user->email, 'password' => 'secret-pass-1'])->json('token');
+
+        $own = Incident::factory()->create(['declarant_id' => $user->id]);
+        $foreign = Incident::factory()->create(['declarant_id' => User::factory()->create()->id]);
+
+        $this->withToken($token)->getJson("/api/v1/incidents/{$own->id}")->assertOk();
+        $this->withToken($token)->getJson("/api/v1/incidents/{$foreign->id}")->assertForbidden();
+
+        $this->withToken($token)->deleteJson('/api/v1/auth/token')->assertOk();
+        $this->app['auth']->forgetGuards();
+        $this->withToken($token)->getJson('/api/v1/me')->assertUnauthorized();
+    }
+
+    public function test_unknown_resource_returns_json_404(): void
+    {
+        Sanctum::actingAs(User::factory()->admin()->create());
+
+        $this->getJson('/api/v1/incidents/999999')->assertNotFound()->assertJsonStructure(['message']);
+    }
 }
