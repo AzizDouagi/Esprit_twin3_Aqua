@@ -4,12 +4,20 @@ namespace Tests\Feature;
 
 use App\Models\Incident;
 use App\Models\Infrastructure;
+use App\Models\User;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Tests\TestCase;
 
 class AquaSecureCrudTest extends TestCase
 {
     use RefreshDatabase;
+
+    protected function setUp(): void
+    {
+        parent::setUp();
+
+        $this->actingAs(User::factory()->admin()->create());
+    }
 
     public function test_front_office_and_dashboard_are_accessible(): void
     {
