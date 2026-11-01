@@ -16,6 +16,11 @@ class DatabaseSeeder extends Seeder
      */
     public function run(): void
     {
+        $this->call([
+            RolesAndPermissionsSeeder::class,
+            UserSeeder::class,
+        ]);
+
         $infrastructures = Infrastructure::factory(12)->create();
 
         Incident::factory(36)
