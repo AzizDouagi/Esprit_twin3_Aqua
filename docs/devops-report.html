@@ -1,128 +1,187 @@
 <!doctype html>
-<html lang="fr"><head><meta charset="utf-8"><title>AquaSecure — Dossier DevOps</title>
+<html lang="fr"><head><meta charset="utf-8"><title>AquaSecure — La démarche DevOps</title>
 <style>
-@page{size:A4;margin:16mm 15mm}
-body{font:10.5pt/1.45 -apple-system,Helvetica,Arial,sans-serif;color:#0f172a}
-h1{font-size:26pt;color:#075985;margin:0 0 4pt}h2{font-size:15pt;color:#075985;border-bottom:2px solid #bae6fd;padding-bottom:3pt;margin-top:18pt;page-break-after:avoid}
-h3{font-size:11.5pt;color:#0c4a6e;margin:12pt 0 4pt;page-break-after:avoid}
-.cover{text-align:center;padding-top:90mm;page-break-after:always}.cover p{font-size:12pt;color:#334155;margin:4pt}
-table{width:100%;border-collapse:collapse;font-size:9.5pt;margin:6pt 0}td,th{border:1px solid #cbd5e1;padding:4pt 6pt;text-align:left;vertical-align:top}th{background:#e0f2fe}
-tr{page-break-inside:avoid}
-figure{margin:8pt 0;page-break-inside:avoid;text-align:center}figure img{max-width:100%;max-height:200mm}
-figcaption{font-size:9pt;color:#475569;margin-top:3pt}
-.shot{border:1px solid #94a3b8;border-radius:4pt}
-code{font:9pt Menlo,monospace;background:#f1f5f9;padding:0 2pt}
-.note{background:#fef9c3;border-left:4px solid #ca8a04;padding:6pt 9pt;margin:8pt 0;font-size:9.5pt}
-.pb{page-break-before:always}
+@page{size:210mm 297mm;margin:0}
+:root{--red:#A61B1B;--dark:#7A1313;--blue:#2B6A8F;--ink:#1F2328;--soft:#4A4F57;--mute:#6B7280;--pink:#F7E6E6;--sky:#E4EEF5;--grey:#F3F4F6}
+*{box-sizing:border-box;margin:0;padding:0}
+body{font-family:"Helvetica Neue",Helvetica,Arial,sans-serif;color:var(--ink);font-size:13.2px;line-height:1.62}
+.page{width:794px;height:1123px;position:relative;overflow:hidden;page-break-after:always;background:#fff;padding:92px 62px 0}
+.dot{position:absolute;top:30px;left:62px;width:14px;height:14px;border-radius:50%;background:var(--red)}
+.arc{position:absolute;top:-70px;right:-60px;width:210px;height:210px;border-radius:50%;background:var(--sky)}
+.foot{position:absolute;left:62px;right:62px;bottom:34px;font-size:10px;color:var(--mute);display:flex;justify-content:space-between;align-items:center}
+.foot:before{content:"";position:absolute;left:0;right:0;top:-10px;height:0}
+.foot .bar{position:absolute;left:0;top:-12px;width:150px;height:2px;background:var(--red)}
+.foot .ring{width:13px;height:13px;border:1.5px solid var(--red);border-radius:50%;position:absolute;left:50%}
+.label{font-size:10px;letter-spacing:.22em;text-transform:uppercase;color:var(--blue);font-weight:700;margin-bottom:8px}
+h1{font-family:Georgia,"Times New Roman",serif;color:var(--red);font-size:31px;line-height:1.15;margin-bottom:18px}
+h2{font-family:Georgia,serif;color:var(--red);font-size:17px;margin:20px 0 6px}
+p{margin-bottom:10px;color:var(--soft)}
+p b,li b{color:var(--ink)}
+.lead{font-size:14.5px;color:var(--ink)}
+code{font-family:Menlo,monospace;font-size:11.5px;color:var(--dark);background:var(--grey);padding:1px 5px;border-radius:4px}
+ol.steps{list-style:none;margin:8px 0 0}
+ol.steps li{display:flex;gap:14px;margin-bottom:9px;color:var(--soft)}
+ol.steps .n{flex:none;width:24px;height:24px;border-radius:50%;background:var(--pink);color:var(--red);font-weight:700;text-align:center;line-height:24px;font-size:12px;margin-top:1px}
+ol.steps li.b .n{background:var(--sky);color:var(--blue)}
+figure{margin:12px 0 4px}
+figure img{width:100%;display:block;border-radius:9px;box-shadow:0 6px 18px rgba(31,35,40,.18)}
+figcaption{font-size:11px;color:var(--mute);margin-top:7px;font-style:italic}
+svg text{font-family:"Helvetica Neue",Helvetica,Arial,sans-serif}
+/* cover */
+.cover{padding-top:70px}
+.cover .logo{height:48px;display:block;margin-bottom:96px}
+.cover .mod{font-size:10px;letter-spacing:.2em;color:var(--red);font-weight:700;text-transform:uppercase;margin-bottom:16px}
+.cover h1{font-size:50px;line-height:1.08;margin-bottom:22px}
+.cover .sub{font-size:16px;color:var(--soft);max-width:430px}
+.cover .who{position:absolute;left:62px;bottom:120px}
+.cover .who b{font-size:15px}.cover .who span{display:block;color:var(--mute);font-size:12px}
+.icons{position:absolute;right:70px;top:770px;display:flex;gap:16px}
+.icons div{width:78px;height:78px;border-radius:16px;display:flex;align-items:center;justify-content:center}
+.icons .r{background:var(--red)}.icons .bl{background:var(--blue)}
+.cap{position:absolute;right:70px;top:862px;display:flex;gap:16px;font-size:11px;font-weight:700}
+.cap span{width:78px;text-align:center}
+.label,.dot,.arc,.mod,.icons,.cap{display:none!important}
+.page{padding-top:64px}
 </style></head><body>
 
-<div class="cover">
-<h1>AquaSecure — Dossier DevOps</h1>
-<p>Application Laravel 12 de supervision d'un réseau d'eau</p>
-<p>Processus DevOps · Pipeline CI/CD · Preuves d'exécution</p>
-<p style="margin-top:30mm">Aziz Douagi — 5TWIN, ESPRIT</p>
-<p>Version v1.1.0 · 1 novembre 2026</p>
-<p>Dépôt : github.com/AzizDouagi/Esprit_twin3_Aqua</p>
-</div>
+<!-- 1. Couverture -->
+<section class="page cover"><i class="dot"></i><i class="arc"></i>
+<img class="logo" src="evidence/esprit-logo.jpeg" alt="ESPRIT">
+<div class="mod">Module · Test et validation de logiciel · DevOps</div>
+<h1>AquaSecure,<br>de l’idée à la mise en ligne</h1>
+<p class="sub">Comment nous construisons, vérifions et livrons le projet, expliqué simplement, avec les commandes réellement exécutées.</p>
+<div class="icons">
+<div class="r"><svg width="40" height="40" viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M20 12a8 8 0 1 1-2.6-5.9"/><path d="M20 4v5h-5"/></svg></div>
+<div class="bl"><svg width="40" height="40" viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="9"/><path d="M8 12.5l3 3 5-6"/></svg></div></div>
+<div class="cap"><span style="color:var(--red)">construire</span><span style="color:var(--blue)">livrer</span></div>
+<div class="who"><b>Aziz Douagi</b><span>Cycle ingénieur · ESPRIT · 5TWIN</span><span style="margin-top:6px">Projet AquaSecure · version 1.1.0 · 1er novembre 2026</span></div>
+<div class="foot"><span class="bar"></span><span>Dossier DevOps · ESPRIT</span><span class="ring"></span><span>1</span></div></section>
 
-<h2 style="margin-top:0">1. Objectif et outils</h2>
-<p>Ce document présente la démarche DevOps mise en place pour AquaSecure : un <b>diagramme du processus DevOps</b>, un <b>pipeline</b> allant du développement à l'intégration continue (CI) puis au déploiement (CD), et les <b>preuves d'exécution</b> obtenues dans le terminal.</p>
-<table>
-<tr><th>Besoin</th><th>Outil</th><th>Fichier du dépôt</th></tr>
-<tr><td>Gestion de versions</td><td>Git, GitHub, branches par phase, tags v0.1.0 à v1.1.0</td><td><code>.git</code>, <code>.github/PULL_REQUEST_TEMPLATE.md</code></td></tr>
-<tr><td>Qualité locale</td><td>Hook pre-commit (Pint, PHPStan, tests)</td><td><code>.githooks/pre-commit</code></td></tr>
-<tr><td>Intégration continue</td><td>GitHub Actions</td><td><code>.github/workflows/ci.yml</code></td></tr>
-<tr><td>Conteneurisation</td><td>Docker multi-stage (cibles <code>app</code> et <code>web</code>), Docker Compose</td><td><code>Dockerfile</code>, <code>docker-compose.yml</code>, <code>docker-compose.prod.yml</code></td></tr>
-<tr><td>Livraison</td><td>Publication des images sur GHCR</td><td><code>.github/workflows/cd.yml</code></td></tr>
-<tr><td>Déploiement</td><td>SSH vers staging puis production, smoke tests, approbation d'environnement</td><td><code>.github/workflows/deploy.yml</code>, <code>scripts/ssh-deploy.sh</code></td></tr>
-<tr><td>Maintenance</td><td>Dependabot, modèles d'issues, endpoints <code>/up</code> et <code>/health</code></td><td><code>.github/dependabot.yml</code></td></tr>
-</table>
+<!-- 2. Idée générale -->
+<section class="page"><i class="dot"></i><i class="arc"></i>
+<div class="label">Chapitre 1 · Le point de départ</div>
+<h1>Pourquoi DevOps pour AquaSecure ?</h1>
+<p class="lead">AquaSecure surveille un réseau d’eau : infrastructures, relevés, incidents. Une erreur de livraison n’y est pas anodine. Nous voulions donc qu’une modification ne parte jamais en production sans avoir été relue, testée et reconstruite à l’identique.</p>
+<p>Le mot DevOps désigne cette habitude : ceux qui <b>développent</b> et ceux qui <b>exploitent</b> travaillent dans une seule boucle, avec des étapes automatiques plutôt que des manipulations à la main. Plus un défaut est détecté tôt, moins il coûte cher à corriger, et c’est exactement l’idée du « shift left » vu en cours.</p>
+<h2>Ce que ce document contient</h2>
+<p>Deux schémas, comme demandé : le <b>processus DevOps</b> mis en place dans le projet, puis le <b>pipeline</b> qui va du développement à l’intégration continue (CI) et au déploiement continu (CD). Chaque étape est ensuite illustrée par une vraie commande lancée dans le terminal du Mac, avec son résultat.</p>
+<h2>Les outils, en une phrase chacun</h2>
+<ol class="steps">
+<li><span class="n">1</span><div><b>Git et GitHub</b> gardent l’historique : une branche par phase du projet, des fusions explicites, des versions numérotées de v0.1.0 à v1.1.0.</div></li>
+<li class="b"><span class="n">2</span><div><b>Pint, PHPStan et PHPUnit</b> relisent le style, cherchent les erreurs de typage et rejouent 111 tests automatiques.</div></li>
+<li><span class="n">3</span><div><b>Docker et Docker Compose</b> emballent l’application avec son serveur web, sa base MySQL, sa file de tâches et son planificateur.</div></li>
+<li class="b"><span class="n">4</span><div><b>GitHub Actions</b> exécute tout cela à chaque envoi de code, sans que personne n’ait à y penser.</div></li>
+<li><span class="n">5</span><div><b>GHCR</b>, le registre de GitHub, conserve les images construites, prêtes à être déployées.</div></li>
+</ol>
+<p style="margin-top:14px">Une précision d’honnêteté dès maintenant : tout ce qui est montré ici a été exécuté pour de vrai, sauf le déploiement final sur un serveur, que nous n’avons pas activé (voir le dernier chapitre).</p>
+<div class="foot"><span class="bar"></span><span>Dossier DevOps · ESPRIT</span><span class="ring"></span><span>2</span></div></section>
 
-<h2>2. Diagramme du processus DevOps</h2>
-<figure><img src="diagrams/devops-process.png" alt="Processus DevOps">
-<figcaption>Figure 1 — Boucle DevOps d'AquaSecure : Dev (planifier, coder, construire, tester) puis Ops (livrer, déployer, exploiter, superviser), avec retour d'expérience vers la planification.</figcaption></figure>
-<table>
-<tr><th>Phase</th><th>Ce qui est fait dans AquaSecure</th></tr>
-<tr><td>1. Planifier</td><td>Besoins traduits en phases et critères d'acceptation, issues GitHub (modèles bug et fonctionnalité).</td></tr>
-<tr><td>2. Coder</td><td>Une branche par phase (<code>feature/*</code>, <code>devops/*</code>), commits au format Conventional Commits, tests écrits avec le code.</td></tr>
-<tr><td>3. Construire</td><td><code>composer install</code>, <code>npm run build</code> (Vite), images Docker <code>app</code> (PHP-FPM, non-root) et <code>web</code> (Nginx).</td></tr>
-<tr><td>4. Tester</td><td>Laravel Pint, PHPStan/Larastan, PHPUnit (111 tests), <code>composer audit</code>, <code>npm audit</code>.</td></tr>
-<tr><td>5. Livrer</td><td>Merge <code>--no-ff</code> sur <code>main</code>, tag sémantique <code>vX.Y.Z</code>, images publiées sur GHCR avec les tags sha, semver et latest.</td></tr>
-<tr><td>6. Déployer</td><td>Staging puis production par SSH, avec la même image ; la production exige l'approbation de l'environnement GitHub.</td></tr>
-<tr><td>7. Exploiter</td><td>Compose : MySQL, application, Nginx, worker de file d'attente, scheduler Laravel, Mailpit.</td></tr>
-<tr><td>8. Superviser</td><td>Healthchecks <code>/up</code> et <code>/health</code>, logs applicatifs, journal <code>ai_logs</code> ; les retours alimentent la planification.</td></tr>
-</table>
+<!-- 3. Diagramme du processus -->
+<section class="page"><i class="dot"></i><i class="arc"></i>
+<div class="label">Chapitre 2 · Le processus</div>
+<h1>La boucle DevOps d’AquaSecure</h1>
+<p>Le travail ne s’arrête jamais à la mise en ligne : ce que l’on observe en production nourrit la prochaine idée. En haut, le côté <b style="color:var(--red)">développement</b> ; en bas, le côté <b style="color:var(--blue)">exploitation</b>.</p>
+<svg viewBox="0 0 700 330" width="100%" style="margin:6px 0 4px">
+<defs><marker id="a" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="7" markerHeight="7" orient="auto"><path d="M0 0L10 5L0 10z" fill="#9AA0A8"/></marker></defs>
+<g fill="none" stroke="#9AA0A8" stroke-width="1.8" marker-end="url(#a)">
+<path d="M150 70H178"/><path d="M328 70H356"/><path d="M506 70H534"/>
+<path d="M650 104C650 150 650 170 650 206"/>
+<path d="M534 262H506"/><path d="M356 262H328"/><path d="M178 262H150"/>
+<path d="M50 206C50 170 50 150 50 104"/></g>
+<g font-size="13" font-weight="700">
+<rect x="0" y="36" width="150" height="68" rx="14" fill="#F7E6E6"/><circle cx="20" cy="56" r="10" fill="#A61B1B"/><text x="20" y="60" fill="#fff" font-size="11" text-anchor="middle">1</text><text x="38" y="62" fill="#A61B1B">Planifier</text><text x="12" y="84" fill="#4A4F57" font-size="11" font-weight="400">besoins, critères de test</text>
+<rect x="178" y="36" width="150" height="68" rx="14" fill="#F7E6E6"/><circle cx="198" cy="56" r="10" fill="#A61B1B"/><text x="198" y="60" fill="#fff" font-size="11" text-anchor="middle">2</text><text x="216" y="62" fill="#A61B1B">Coder</text><text x="190" y="84" fill="#4A4F57" font-size="11" font-weight="400">branche par phase</text>
+<rect x="356" y="36" width="150" height="68" rx="14" fill="#F7E6E6"/><circle cx="376" cy="56" r="10" fill="#A61B1B"/><text x="376" y="60" fill="#fff" font-size="11" text-anchor="middle">3</text><text x="394" y="62" fill="#A61B1B">Construire</text><text x="368" y="84" fill="#4A4F57" font-size="11" font-weight="400">Composer, Vite, Docker</text>
+<rect x="534" y="36" width="166" height="68" rx="14" fill="#F7E6E6"/><circle cx="554" cy="56" r="10" fill="#A61B1B"/><text x="554" y="60" fill="#fff" font-size="11" text-anchor="middle">4</text><text x="572" y="62" fill="#A61B1B">Tester</text><text x="546" y="84" fill="#4A4F57" font-size="11" font-weight="400">Pint, PHPStan, 111 tests</text>
+<rect x="534" y="206" width="166" height="68" rx="14" fill="#E4EEF5"/><circle cx="554" cy="226" r="10" fill="#2B6A8F"/><text x="554" y="230" fill="#fff" font-size="11" text-anchor="middle">5</text><text x="572" y="232" fill="#2B6A8F">Livrer</text><text x="546" y="254" fill="#4A4F57" font-size="11" font-weight="400">images publiées sur GHCR</text>
+<rect x="356" y="206" width="150" height="68" rx="14" fill="#E4EEF5"/><circle cx="376" cy="226" r="10" fill="#2B6A8F"/><text x="376" y="230" fill="#fff" font-size="11" text-anchor="middle">6</text><text x="394" y="232" fill="#2B6A8F">Déployer</text><text x="368" y="254" fill="#4A4F57" font-size="11" font-weight="400">staging puis production</text>
+<rect x="178" y="206" width="150" height="68" rx="14" fill="#E4EEF5"/><circle cx="198" cy="226" r="10" fill="#2B6A8F"/><text x="198" y="230" fill="#fff" font-size="11" text-anchor="middle">7</text><text x="216" y="232" fill="#2B6A8F">Exploiter</text><text x="190" y="254" fill="#4A4F57" font-size="11" font-weight="400">pile Compose complète</text>
+<rect x="0" y="206" width="150" height="68" rx="14" fill="#E4EEF5"/><circle cx="20" cy="226" r="10" fill="#2B6A8F"/><text x="20" y="230" fill="#fff" font-size="11" text-anchor="middle">8</text><text x="38" y="232" fill="#2B6A8F">Superviser</text><text x="12" y="254" fill="#4A4F57" font-size="11" font-weight="400">/up, /health, journaux</text>
+</g>
+<text x="350" y="160" text-anchor="middle" font-size="12" fill="#6B7280" font-style="italic">les retours du terrain deviennent le prochain besoin</text>
+<text x="350" y="312" text-anchor="middle" font-size="11" fill="#6B7280">DEV ↑ — la boucle recommence à chaque version — OPS ↓</text>
+</svg>
+<h2>Lire la boucle</h2>
+<p>On <b>planifie</b> un besoin, on le <b>code</b> sur sa propre branche, puis on le <b>construit</b> et on le <b>teste</b> automatiquement. Si tout est vert, on le <b>livre</b> sous forme d’image Docker, on le <b>déploie</b> et on l’<b>exploite</b>. Enfin on <b>supervise</b> : les routes <code>/up</code> et <code>/health</code> indiquent si l’application et sa base répondent, et ce que l’on constate relance la planification.</p>
+<p>Concrètement, AquaSecure a avancé phase par phase : gestion des utilisateurs, infrastructures, incidents, API et tableau de bord, intelligence artificielle, puis Docker et CI/CD. Chaque phase a eu sa branche, sa fusion et son numéro de version.</p>
+<div class="foot"><span class="bar"></span><span>Dossier DevOps · ESPRIT</span><span class="ring"></span><span>3</span></div></section>
 
-<h2>3. Pipeline : développement, CI, CD</h2>
-<figure><img src="diagrams/pipeline-cicd.png" alt="Pipeline CI/CD" style="max-height:150mm">
-<figcaption>Figure 2 — Pipeline complet du commit au déploiement.</figcaption></figure>
+<!-- 4. Pipeline -->
+<section class="page"><i class="dot"></i><i class="arc"></i>
+<div class="label">Chapitre 3 · Le pipeline</div>
+<h1>Du développement au déploiement</h1>
+<p>Le pipeline est le chemin qu’un changement emprunte, de l’ordinateur du développeur jusqu’au serveur. Il se lit de haut en bas, en trois temps.</p>
+<svg viewBox="0 0 740 482" width="100%" style="margin:4px 0">
+<defs><marker id="b" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="7" markerHeight="7" orient="auto"><path d="M0 0L10 5L0 10z" fill="#9AA0A8"/></marker></defs>
+<g font-size="10" font-weight="700" letter-spacing="2.2"><text x="20" y="16" fill="#A61B1B">DÉVELOPPEMENT</text><text x="20" y="186" fill="#2B6A8F">INTÉGRATION CONTINUE · ci.yml</text><text x="20" y="338" fill="#7A1313">DÉPLOIEMENT CONTINU · cd.yml</text></g>
+<g fill="none" stroke="#9AA0A8" stroke-width="1.6" marker-end="url(#b)">
+<path d="M158 66H172"/><path d="M310 66H324"/><path d="M462 66H476"/>
+<path d="M650 104C650 130 340 130 340 166 L340 172"/>
+<path d="M144 232H152"/><path d="M276 232H284"/><path d="M408 232H416"/><path d="M540 232H548"/>
+<path d="M650 270C650 296 340 296 340 326 L340 332"/>
+<path d="M158 396H172"/><path d="M310 396H324"/><path d="M462 396H476"/>
+</g>
+<g font-size="12" font-weight="700">
+<rect x="20" y="30" width="138" height="72" rx="14" fill="#F7E6E6"/><text x="32" y="56" fill="#A61B1B">Branche</text><text x="32" y="74" fill="#4A4F57" font-size="10.5" font-weight="400">feature/… ou devops/…</text><text x="32" y="90" fill="#4A4F57" font-size="10.5" font-weight="400">un sujet à la fois</text>
+<rect x="172" y="30" width="138" height="72" rx="14" fill="#F7E6E6"/><text x="184" y="56" fill="#A61B1B">Commits</text><text x="184" y="74" fill="#4A4F57" font-size="10.5" font-weight="400">feat, fix, ci, docs…</text><text x="184" y="90" fill="#4A4F57" font-size="10.5" font-weight="400">format Conventional</text>
+<rect x="324" y="30" width="138" height="72" rx="14" fill="#F7E6E6"/><text x="336" y="56" fill="#A61B1B">Hook local</text><text x="336" y="74" fill="#4A4F57" font-size="10.5" font-weight="400">Pint, PHPStan, tests</text><text x="336" y="90" fill="#4A4F57" font-size="10.5" font-weight="400">avant chaque commit</text>
+<rect x="476" y="30" width="244" height="72" rx="14" fill="#A61B1B"/><text x="490" y="56" fill="#fff">Push ou pull request</text><text x="490" y="74" fill="#fff" font-size="10.5" font-weight="400">GitHub reçoit le code ;</text><text x="490" y="90" fill="#fff" font-size="10.5" font-weight="400">les workflows se déclenchent</text>
+<rect x="20" y="196" width="124" height="72" rx="14" fill="#E4EEF5"/><text x="30" y="222" fill="#2B6A8F">Installer</text><text x="30" y="240" fill="#4A4F57" font-size="10.5" font-weight="400">Composer, npm</text><text x="30" y="256" fill="#4A4F57" font-size="10.5" font-weight="400">PHP 8.2 et 8.3</text>
+<rect x="152" y="196" width="124" height="72" rx="14" fill="#E4EEF5"/><text x="162" y="222" fill="#2B6A8F">Qualité</text><text x="162" y="240" fill="#4A4F57" font-size="10.5" font-weight="400">Pint (style)</text><text x="162" y="256" fill="#4A4F57" font-size="10.5" font-weight="400">PHPStan (typage)</text>
+<rect x="284" y="196" width="124" height="72" rx="14" fill="#E4EEF5"/><text x="294" y="222" fill="#2B6A8F">Tests</text><text x="294" y="240" fill="#4A4F57" font-size="10.5" font-weight="400">PHPUnit + MySQL</text><text x="294" y="256" fill="#4A4F57" font-size="10.5" font-weight="400">couverture</text>
+<rect x="416" y="196" width="124" height="72" rx="14" fill="#E4EEF5"/><text x="426" y="222" fill="#2B6A8F">Front et audits</text><text x="426" y="240" fill="#4A4F57" font-size="10.5" font-weight="400">build Vite</text><text x="426" y="256" fill="#4A4F57" font-size="10.5" font-weight="400">composer, npm audit</text>
+<rect x="548" y="196" width="172" height="72" rx="14" fill="#2B6A8F"/><text x="560" y="222" fill="#fff">Images Docker</text><text x="560" y="240" fill="#fff" font-size="10.5" font-weight="400">build app + web, pile Compose,</text><text x="560" y="256" fill="#fff" font-size="10.5" font-weight="400">test de /up et /health</text>
+<rect x="20" y="360" width="138" height="72" rx="14" fill="#F7E6E6"/><text x="32" y="386" fill="#7A1313">Publier</text><text x="32" y="404" fill="#4A4F57" font-size="10.5" font-weight="400">images sur GHCR</text><text x="32" y="420" fill="#4A4F57" font-size="10.5" font-weight="400">tags sha, version, latest</text>
+<rect x="172" y="360" width="138" height="72" rx="14" fill="#F7E6E6"/><text x="184" y="386" fill="#7A1313">Staging</text><text x="184" y="404" fill="#4A4F57" font-size="10.5" font-weight="400">déploiement SSH</text><text x="184" y="420" fill="#4A4F57" font-size="10.5" font-weight="400">puis contrôle /health</text>
+<rect x="324" y="360" width="138" height="72" rx="14" fill="#F7E6E6"/><text x="336" y="386" fill="#7A1313">Approbation</text><text x="336" y="404" fill="#4A4F57" font-size="10.5" font-weight="400">validation humaine</text><text x="336" y="420" fill="#4A4F57" font-size="10.5" font-weight="400">pour une version v*</text>
+<rect x="476" y="360" width="244" height="72" rx="14" fill="#7A1313"/><text x="490" y="386" fill="#fff">Production</text><text x="490" y="404" fill="#fff" font-size="10.5" font-weight="400">mêmes images que le staging ;</text><text x="490" y="420" fill="#fff" font-size="10.5" font-weight="400">échec du contrôle = retour arrière</text>
+</g>
+<path d="M598 440C598 458 250 458 250 442" fill="none" stroke="#B93A3A" stroke-width="1.6" stroke-dasharray="5 4" marker-end="url(#b)"/>
+<text x="424" y="478" text-anchor="middle" font-size="10.5" fill="#B93A3A" font-style="italic">rollback : retour aux images précédentes</text>
+</svg>
+<h2>En trois mots</h2>
+<p><b>Développer</b> : on travaille sur une branche et on vérifie localement. <b>Intégrer</b> : GitHub Actions rejoue toutes les vérifications dans un environnement neuf, ce qui évite le fameux « chez moi ça marche ». <b>Déployer</b> : on publie les images, puis on les met en service, avec une validation humaine avant la production.</p>
+<div class="foot"><span class="bar"></span><span>Dossier DevOps · ESPRIT</span><span class="ring"></span><span>4</span></div></section>
 
-<h3>3.1 Intégration continue (<code>ci.yml</code>)</h3>
-<p>Déclenchée sur chaque pull request, sur les push des branches <code>feature/**</code>, <code>devops/**</code>, <code>docs/**</code>, et appelée par la CD (<code>workflow_call</code>). Permissions minimales : <code>contents: read</code>.</p>
-<table>
-<tr><th>Job</th><th>Étapes</th></tr>
-<tr><td><b>quality</b> (matrice PHP 8.2 et 8.3, service MySQL 8.4)</td><td><code>composer validate --strict</code> · <code>composer install</code> · <code>migrate:fresh --seed</code> · <code>composer lint</code> (Pint) · <code>composer analyse</code> (PHPStan) · <code>php artisan test</code> avec couverture clover/JUnit exportée en artefact · <code>npm ci</code> et <code>npm run build</code> · <code>composer audit</code> et <code>npm audit</code> · validation YAML, scripts shell et <code>docker compose config</code></td></tr>
-<tr><td><b>images</b></td><td>Build des cibles <code>app</code> et <code>web</code> · <code>docker compose up --wait</code> sur une base isolée · <code>curl</code> sur <code>/up</code> et <code>/health</code> · nettoyage des conteneurs</td></tr>
-</table>
+<!-- 5. Git -->
+<section class="page"><i class="dot"></i><i class="arc"></i>
+<div class="label">Chapitre 4 · Preuve 1 sur 4 · Développement</div>
+<h1>Une branche par phase</h1>
+<p>Nous ne travaillons jamais directement sur <code>main</code>. Chaque phase (authentification, incidents, API, IA, Docker, CI/CD) vit sur sa branche, puis revient avec une fusion explicite. Le graphe ci-dessous, tiré du terminal, montre ces boucles de fusion.</p>
+<figure><img src="evidence/terminal-1.png" alt="" style="width:84%"><figcaption>Commande <code>git log --graph --decorate --oneline -14</code> : chaque phase fusionnée sur main avec son message normalisé.</figcaption></figure>
+<p>Les versions sont ensuite posées comme des repères sur l’historique, et le dépôt est bien relié à GitHub, avec les trois workflows du projet.</p>
+<figure><img src="evidence/terminal-2.png" alt=""><figcaption>Versions v0.1.0 à v1.1.0, dépôt distant et workflows <code>ci.yml</code>, <code>cd.yml</code>, <code>deploy.yml</code>.</figcaption></figure>
+<div class="foot"><span class="bar"></span><span>Dossier DevOps · ESPRIT</span><span class="ring"></span><span>5</span></div></section>
 
-<h3>3.2 Livraison et déploiement continus (<code>cd.yml</code>, <code>deploy.yml</code>)</h3>
-<table>
-<tr><th>Étape</th><th>Condition</th><th>Action</th></tr>
-<tr><td>ci</td><td>push sur <code>main</code> ou tag <code>v*</code></td><td>Réutilise <code>ci.yml</code> ; rien n'est publié si la CI échoue.</td></tr>
-<tr><td>publish</td><td>après <code>ci</code></td><td>Build et push de deux images vers <code>ghcr.io</code> : tags <code>sha-…</code>, semver et <code>latest</code> (sur tag).</td></tr>
-<tr><td>staging</td><td><code>vars.DEPLOY_ENABLED == 'true'</code></td><td>Déploiement SSH : sauvegarde, migrations, <code>up</code>, smoke tests.</td></tr>
-<tr><td>production</td><td>tag <code>v*</code>, après staging, approbation de l'environnement</td><td>Même image que staging ; <code>up</code>, <code>/health</code>, smoke tests.</td></tr>
-<tr><td>rollback</td><td>échec de démarrage ou de smoke</td><td>Retour aux images précédentes ; le schéma de base de données est conservé, la compatibilité reste à vérifier.</td></tr>
-</table>
-<p><b>Secrets et variables GitHub à créer pour un déploiement réel :</b> <code>SSH_HOST</code>, <code>SSH_USER</code>, <code>SSH_PORT</code>, <code>SSH_PRIVATE_KEY</code>, <code>SSH_KNOWN_HOSTS</code>, <code>vars.DEPLOY_PATH</code>, <code>vars.DEPLOY_ENABLED</code>.</p>
+<!-- 6. CI -->
+<section class="page"><i class="dot"></i><i class="arc"></i>
+<div class="label">Chapitre 4 · Preuve 2 sur 4 · Intégration continue</div>
+<h1>Vérifier avant de livrer</h1>
+<p>La CI enchaîne trois contrôles que nous avons rejoués à la main pour cette capture : Pint vérifie la présentation du code, PHPStan cherche les erreurs que le typage laisse passer, et PHPUnit exécute les tests. Sur GitHub, la même série tourne sur PHP 8.2 et PHP 8.3, avec une vraie base MySQL, puis un build Vite et un audit des dépendances.</p>
+<figure><img src="evidence/terminal-3.png" alt=""><figcaption>Pint sans correction à faire, PHPStan sans erreur, et 111 tests réussis pour 548 assertions.</figcaption></figure>
+<p>Pourquoi autant d’exigence ? Parce qu’un test qui passe sur un seul ordinateur ne prouve pas grand-chose. En répétant la vérification sur des machines vierges, nous nous rapprochons des conditions réelles. Concrètement, le fichier <code>ci.yml</code> contient deux tâches : <b>quality</b>, qui joue la série Pint, PHPStan et PHPUnit sur les deux versions de PHP, et <b>images</b>, qui construit les images Docker et démarre la pile pour de vrai. Si l’une échoue, rien n’est publié. Nous avons aussi mesuré la couverture : environ <b>87 % des lignes</b> du code applicatif sont exécutées par les tests.</p>
+<div class="foot"><span class="bar"></span><span>Dossier DevOps · ESPRIT</span><span class="ring"></span><span>6</span></div></section>
 
-<h2>4. Architecture Docker</h2>
-<figure><img src="diagrams/docker-architecture.png" alt="Architecture Docker" style="max-height:150mm">
-<figcaption>Figure 3 — Services Docker Compose : Nginx, application PHP-FPM, MySQL, worker de file d'attente, scheduler, Mailpit.</figcaption></figure>
-<ul>
-<li>Build multi-stage : compilation Vite, puis images de runtime <code>app</code> (utilisateur non-root, OPcache) et <code>web</code> (Nginx unprivileged).</li>
-<li>Healthchecks sur chaque service ; <code>docker compose up --wait</code> attend leur état sain.</li>
-<li>Séparation développement et production : en production, <code>APP_DEBUG=false</code>, aucun phpMyAdmin ni Mailpit, port publié sur 127.0.0.1 uniquement.</li>
-</ul>
+<!-- 7. Docker -->
+<section class="page"><i class="dot"></i><i class="arc"></i>
+<div class="label">Chapitre 4 · Preuve 3 sur 4 · Construction</div>
+<h1>Docker : la même application partout</h1>
+<p>Le <code>Dockerfile</code> construit deux images à partir du même code : une pour l’application (PHP-FPM, utilisateur non-root, OPcache) et une pour le serveur web Nginx. Le front-end est compilé avec Vite dans une étape séparée, donc l’image finale ne transporte pas Node.</p>
+<figure><img src="evidence/terminal-4.png" alt=""><figcaption>Validation de la configuration Compose, puis construction des deux images <code>app</code> et <code>web</code>.</figcaption></figure>
+<p>On démarre ensuite toute la pile d’un seul geste. L’option <code>--wait</code> attend que chaque service se déclare en bonne santé : base de données, application, Nginx, file de tâches, planificateur et boîte mail de test. Un simple appel à <code>/up</code> et <code>/health</code> confirme que l’application répond et qu’elle parle bien à sa base.</p>
+<figure><img src="evidence/terminal-5.png" alt=""><figcaption>Pile démarrée sur un port isolé : six services <i>healthy</i>, <code>/up</code> en 200 et <code>/health</code> avec « database : ok ».</figcaption></figure>
+<div class="foot"><span class="bar"></span><span>Dossier DevOps · ESPRIT</span><span class="ring"></span><span>7</span></div></section>
 
-<h2 class="pb">5. Preuves d'exécution dans le terminal</h2>
-<p>Les commandes suivantes ont été lancées dans le terminal de la machine <code>azizdouagi@MacBook-Pro-de-Aziz</code>, dans le dossier du projet. Chaque capture reprend la commande saisie et la sortie réellement obtenue.</p>
-
-<h3>5.1 Historique Git : une branche par phase, merges <code>--no-ff</code></h3>
-<figure><img class="shot" src="evidence/terminal-1.png"><figcaption>Capture 1 — <code>git log --graph --decorate --oneline -14</code>.</figcaption></figure>
-
-<h3>5.2 Versions, dépôt distant et workflows</h3>
-<figure><img class="shot" src="evidence/terminal-2.png"><figcaption>Capture 2 — Tags v0.1.0 à v1.1.0, remote GitHub et trois workflows (<code>ci.yml</code>, <code>cd.yml</code>, <code>deploy.yml</code>).</figcaption></figure>
-
-<h3 class="pb">5.3 Contrôles qualité : Pint, PHPStan, tests</h3>
-<figure><img class="shot" src="evidence/terminal-3.png"><figcaption>Capture 3 — Pint (154 fichiers conformes), PHPStan sans erreur, 111 tests et 548 assertions réussis.</figcaption></figure>
-
-<h3>5.4 Docker : validation Compose et build des deux images</h3>
-<figure><img class="shot" src="evidence/terminal-4.png"><figcaption>Capture 4 — <code>docker compose config</code> valide ; images <code>aquasecure-web</code> (83,1 Mo) et <code>aquasecure-app</code> (867 Mo) construites.</figcaption></figure>
-
-<h3>5.5 Docker : démarrage de la pile et healthchecks</h3>
-<figure><img class="shot" src="evidence/terminal-5.png"><figcaption>Capture 5 — Les six services sont <i>healthy</i> ; <code>/up</code> renvoie HTTP 200 et <code>/health</code> confirme l'état de la base de données.</figcaption></figure>
-
-<h3>5.6 Pipeline GitHub Actions sur <code>main</code></h3>
-<figure><img class="shot" src="evidence/terminal-6.png"><figcaption>Capture 6 — Le workflow CD du commit <code>13d7ee3</code> (qui exécute la CI puis publie les images) est terminé avec succès ; les mises à jour Dependabot sont aussi vertes.</figcaption></figure>
-
-<h2>6. Limites assumées</h2>
-<div class="note">
-<ul style="margin:0;padding-left:14pt">
-<li>La CI et la publication GHCR ont été exécutées sur GitHub avec succès pour le commit <code>13d7ee3</code> (capture 6).</li>
-<li>Le déploiement SSH vers staging et production n'est <b>pas activé</b> : il demande un serveur, les secrets SSH et <code>DEPLOY_ENABLED=true</code>. Il est décrit et validé syntaxiquement, mais n'a pas été exécuté.</li>
-<li>La pile Docker de validation a été lancée localement puis supprimée ; les captures 4 et 5 en sont la trace.</li>
-<li>Le rollback restaure les images, pas la base de données : toute migration destructive doit être vérifiée avant production.</li>
-</ul></div>
-
-<h2>7. Tableau critères / preuves</h2>
-<table>
-<tr><th>Exigence du sujet</th><th>Réalisation</th><th>Preuve</th></tr>
-<tr><td>Diagramme du processus DevOps</td><td>Boucle en 8 phases Dev / Ops</td><td>Figure 1, section 2</td></tr>
-<tr><td>Pipeline développement → CI → CD</td><td><code>ci.yml</code>, <code>cd.yml</code>, <code>deploy.yml</code></td><td>Figure 2, section 3, capture 6</td></tr>
-<tr><td>Intégration continue</td><td>Pint, PHPStan, 111 tests, audits, build Vite et Docker</td><td>Capture 3</td></tr>
-<tr><td>Conteneurisation</td><td>Images app et web, Compose, healthchecks</td><td>Captures 4 et 5</td></tr>
-<tr><td>Workflow Git</td><td>Branches par phase, merges <code>--no-ff</code>, tags sémantiques</td><td>Captures 1 et 2</td></tr>
-<tr><td>Déploiement</td><td>SSH staging puis production avec approbation</td><td>Section 3.2 (non exécuté en réel)</td></tr>
-</table>
+<!-- 8. CD + limites -->
+<section class="page"><i class="dot"></i><i class="arc"></i>
+<div class="label">Chapitre 4 · Preuve 4 sur 4 · Livraison</div>
+<h1>GitHub Actions et ce qui reste à faire</h1>
+<p>Une fois le code poussé sur <code>main</code>, le workflow CD relance d’abord la CI, puis construit et publie les images sur GHCR. Voici l’état réel interrogé auprès de GitHub, directement depuis le terminal.</p>
+<figure><img src="evidence/terminal-6.png" alt=""><figcaption>Le workflow CD du dernier commit est terminé avec succès.</figcaption></figure>
+<h2>Les garde-fous du déploiement</h2>
+<p>Le déploiement par SSH est volontairement protégé : il ne se déclenche que si la variable <code>DEPLOY_ENABLED</code> vaut <code>true</code>, et la production exige une version <code>v*</code> déjà passée par le staging et approuvée par une personne. Après chaque mise en service, un contrôle de <code>/health</code> décide : s’il échoue, les images précédentes sont remises en place. Les migrations restent additives pour qu’un retour arrière ne détruise aucune donnée.</p>
+<h2>Ce que nous n’avons pas fait, et pourquoi</h2>
+<p>Nous n’avons <b>pas</b> activé de déploiement sur un vrai serveur : cela demande une machine, des clés SSH et des secrets GitHub (<code>SSH_HOST</code>, <code>SSH_USER</code>, <code>SSH_PRIVATE_KEY</code>, <code>SSH_KNOWN_HOSTS</code>) que nous n’avons pas créés. Cette partie est donc prête et relue, mais non exécutée.</p>
+<p>Enfin, l’intelligence artificielle fonctionne par défaut avec un fournisseur local déterministe ; l’appel au service Anthropic n’a pas été testé en réel faute de clé. Nous préférons le dire clairement plutôt que de présenter comme validé ce qui ne l’est pas.</p>
+<div class="foot"><span class="bar"></span><span>Dossier DevOps · ESPRIT</span><span class="ring"></span><span>8</span></div></section>
 </body></html>
