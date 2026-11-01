@@ -6,36 +6,24 @@ use App\Http\Requests\StoreIncidentRequest;
 use App\Http\Requests\UpdateIncidentRequest;
 use App\Models\Incident;
 use App\Models\Infrastructure;
+use App\Models\User;
+use Illuminate\Database\Eloquent\Collection;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
+use Illuminate\Validation\Rule;
 use Illuminate\View\View;
 
 class IncidentController extends Controller
 {
-    /**
-     * Display a listing of the resource.
-     */
+    public const FILTRES = ['search', 'statut', 'gravite', 'infrastructure_id', 'technicien_id', 'du', 'au'];
+
     public function index(Request $request): View
     {
         $this->authorize('viewAny', Incident::class);
 
-        $search = $request->string('search')->toString();
-        $statut = $request->string('statut')->toString();
-        $gravite = $request->string('gravite')->toString();
-
-        $incidents = Incident::with('infrastructure')
-            ->when($search, function ($query, string $search): void {
-                $query->where(function ($query) use ($search): void {
-                    $query->where('titre', 'like', "%{$search}%")
-                        ->orWhere('description', 'like', "%{$search}%")
-                        ->orWhere('type', 'like', "%{$search}%")
-                        ->orWhereHas('infrastructure', fn ($query) => $query->where('nom', 'like', "%{$search}%"));
-                });
-            })
-            ->when($statut, fn ($query, string $statut) => $query->where('statut', $statut))
-            ->when($gravite, fn ($query, string $gravite) => $query->where('gravite', $gravite))
-            ->latest('date_incident')
-            ->latest()
+        $incidents = Incident::with(['infrastructure', 'technicien'])
+            ->filtrer($request->only(self::FILTRES))
+            ->trier($request->string('tri')->toString(), $request->string('sens')->toString())
             ->paginate(10)
             ->withQueryString();
 
@@ -43,67 +31,46 @@ class IncidentController extends Controller
             'incidents' => $incidents,
             'statuts' => Incident::STATUTS,
             'gravites' => Incident::GRAVITES,
+            'infrastructures' => Infrastructure::orderBy('nom')->get(),
+            'techniciens' => $this->techniciens(),
         ]);
     }
 
-    /**
-     * Show the form for creating a new resource.
-     */
     public function create(): View
     {
         $this->authorize('create', Incident::class);
 
-        return view('incidents.create', [
-            'types' => Incident::TYPES,
-            'gravites' => Incident::GRAVITES,
-            'statuts' => Incident::STATUTS,
-            'infrastructures' => Infrastructure::orderBy('nom')->get(),
-        ]);
+        return view('incidents.create', $this->formData());
     }
 
-    /**
-     * Store a newly created resource in storage.
-     */
     public function store(StoreIncidentRequest $request): RedirectResponse
     {
-        $incident = Incident::create($request->validated());
+        $incident = Incident::create($request->validated() + ['declarant_id' => $request->user()->id]);
 
         return redirect()
             ->route('incidents.show', $incident)
             ->with('success', 'Incident ajouté avec succès.');
     }
 
-    /**
-     * Display the specified resource.
-     */
     public function show(Incident $incident): View
     {
         $this->authorize('view', $incident);
 
-        $incident->load('infrastructure');
+        $incident->load(['infrastructure', 'declarant', 'technicien', 'commentaires.auteur', 'historiques.auteur', 'piecesJointes']);
 
-        return view('incidents.show', compact('incident'));
+        return view('incidents.show', [
+            'incident' => $incident,
+            'techniciens' => $this->techniciens(),
+        ]);
     }
 
-    /**
-     * Show the form for editing the specified resource.
-     */
     public function edit(Incident $incident): View
     {
         $this->authorize('update', $incident);
 
-        return view('incidents.edit', [
-            'incident' => $incident,
-            'types' => Incident::TYPES,
-            'gravites' => Incident::GRAVITES,
-            'statuts' => Incident::STATUTS,
-            'infrastructures' => Infrastructure::orderBy('nom')->get(),
-        ]);
+        return view('incidents.edit', ['incident' => $incident] + $this->formData());
     }
 
-    /**
-     * Update the specified resource in storage.
-     */
     public function update(UpdateIncidentRequest $request, Incident $incident): RedirectResponse
     {
         $incident->update($request->validated());
@@ -113,9 +80,35 @@ class IncidentController extends Controller
             ->with('success', 'Incident modifié avec succès.');
     }
 
-    /**
-     * Remove the specified resource from storage.
-     */
+    /** Workflow : Ouvert → En cours → Résolu (transitions contrôlées, journalisées). */
+    public function changerStatut(Request $request, Incident $incident): RedirectResponse
+    {
+        $this->authorize('update', $incident);
+
+        $data = $request->validate(['statut' => ['required', Rule::in(Incident::STATUTS)]]);
+
+        if (! in_array($data['statut'], $incident->transitionsPossibles(), true)) {
+            return back()->withErrors(['statut' => "Transition « {$incident->statut} → {$data['statut']} » non autorisée."]);
+        }
+
+        $incident->update($data);
+
+        return back()->with('success', "Statut passé à « {$data['statut']} ».");
+    }
+
+    public function assigner(Request $request, Incident $incident): RedirectResponse
+    {
+        $this->authorize('update', $incident);
+
+        $data = $request->validate([
+            'technicien_id' => ['nullable', Rule::exists('users', 'id')->where('actif', true)],
+        ]);
+
+        $incident->update(['technicien_id' => $data['technicien_id'] ?? null]);
+
+        return back()->with('success', 'Assignation mise à jour.');
+    }
+
     public function destroy(Incident $incident): RedirectResponse
     {
         $this->authorize('delete', $incident);
@@ -125,5 +118,23 @@ class IncidentController extends Controller
         return redirect()
             ->route('incidents.index')
             ->with('success', 'Incident supprimé avec succès.');
+    }
+
+    /** @return Collection<int, User> */
+    private function techniciens()
+    {
+        return User::role([User::ROLE_TECHNICIEN, User::ROLE_ADMIN])->where('actif', true)->orderBy('name')->get();
+    }
+
+    /** @return array<string, mixed> */
+    private function formData(): array
+    {
+        return [
+            'types' => Incident::TYPES,
+            'gravites' => Incident::GRAVITES,
+            'statuts' => Incident::STATUTS,
+            'infrastructures' => Infrastructure::orderBy('nom')->get(),
+            'techniciens' => $this->techniciens(),
+        ];
     }
 }
