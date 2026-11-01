@@ -140,7 +140,7 @@ class Incident extends Model
         if ($colonne === 'gravite') {
             $ordre = $sens === 'asc' ? 'ASC' : 'DESC';
 
-            return $query->orderByRaw("CASE gravite WHEN 'Critique' THEN 4 WHEN 'Élevée' THEN 3 WHEN 'Moyenne' THEN 2 ELSE 1 END {$ordre}");
+            return $query->orderByRaw("CASE gravite WHEN 'Critique' THEN 4 WHEN 'Élevée' THEN 3 WHEN 'Moyenne' THEN 2 ELSE 1 END {$ordre}")->orderByDesc('id');
         }
 
         return $query->orderBy($colonne, $sens === 'asc' ? 'asc' : 'desc')->orderByDesc('id');

@@ -19,6 +19,7 @@ class InfrastructureController extends Controller
         $this->authorize('viewAny', Infrastructure::class);
 
         $request->validate([
+            'search' => ['nullable', 'string', 'max:180'],
             'etat' => ['nullable', 'in:'.implode(',', Infrastructure::ETATS)],
             'type' => ['nullable', 'in:'.implode(',', Infrastructure::TYPES)],
             'per_page' => ['nullable', 'integer', 'between:1,100'],
