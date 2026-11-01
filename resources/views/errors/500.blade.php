@@ -2,4 +2,4 @@
 @section('code', '500')
 @section('icon', 'tools')
 @section('title', 'Erreur serveur')
-@section('message', 'Une erreur inattendue s’est produite. Notre équipe a été informée.')
+@section('message', 'Une erreur inattendue s’est produite. Réessayez dans quelques instants ou contactez l’administrateur.')
