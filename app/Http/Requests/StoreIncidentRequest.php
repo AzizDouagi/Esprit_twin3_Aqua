@@ -31,6 +31,7 @@ class StoreIncidentRequest extends FormRequest
             'statut' => ['required', Rule::in(Incident::STATUTS)],
             'date_incident' => ['required', 'date'],
             'infrastructure_id' => ['required', 'exists:infrastructures,id'],
+            'technicien_id' => ['nullable', Rule::exists('users', 'id')->where('actif', true)],
         ];
     }
 

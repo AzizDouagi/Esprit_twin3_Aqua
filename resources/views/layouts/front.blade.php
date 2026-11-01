@@ -46,7 +46,8 @@
                         @endcan
                     @endauth
                     @stack('navbar-extra')
-                    @include('partials.user-menu')
+                    @include('partials.notifications-bell', ['light' => false])
+                @include('partials.user-menu')
                 </div>
             </div>
         </div>
