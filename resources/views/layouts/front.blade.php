@@ -4,8 +4,7 @@
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <title>@yield('title', 'Accueil') - AquaSecure</title>
-    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.8/dist/css/bootstrap.min.css" rel="stylesheet">
-    <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.13.1/font/bootstrap-icons.min.css" rel="stylesheet">
+    @vite(['resources/css/app.css', 'resources/js/app.js'])
     @stack('head')
     <style>
         :root { --aqua-primary: #075985; --aqua-secondary: #0891b2; --aqua-soft: #ecfeff; }
@@ -13,9 +12,7 @@
         .front-nav { background: #fff; border-bottom: 1px solid #e2e8f0; }
         .brand-mark { width: 2rem; height: 2rem; display: inline-grid; place-items: center; color: #fff; background: var(--aqua-primary); border-radius: .5rem; }
         .hero {
-            background:
-                linear-gradient(120deg, rgba(7, 89, 133, .94), rgba(8, 145, 178, .78)),
-                url('https://images.unsplash.com/photo-1542314831-068cd1dbfeeb?auto=format&fit=crop&w=1600&q=80') center/cover;
+            background: linear-gradient(120deg, #075985, #0891b2);
             color: #fff;
         }
         .btn-aqua { background: var(--aqua-primary); border-color: var(--aqua-primary); color: #fff; }
@@ -60,7 +57,6 @@
             <span>Module Infrastructures & Incidents</span>
         </div>
     </footer>
-    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.8/dist/js/bootstrap.bundle.min.js"></script>
     @stack('scripts')
 </body>
 </html>

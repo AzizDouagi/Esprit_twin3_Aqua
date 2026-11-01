@@ -94,8 +94,8 @@
 
 @if (count($serie['labels']))
     @push('scripts')
-        <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.7/dist/chart.umd.min.js"></script>
         <script>
+        document.addEventListener('DOMContentLoaded', function () {
             const serie = @json($serie);
             const seuils = @json(config('aquasecure.seuils'));
             const couleurs = {debit: '#0891b2', pression: '#7c3aed', niveau: '#075985', turbidite: '#dc2626', ph: '#16a34a', temperature: '#ea580c'};
@@ -111,6 +111,7 @@
                     options: {plugins: {legend: {display: false}}, scales: {x: {ticks: {maxTicksLimit: 8}}}},
                 });
             });
-        </script>
+                });
+    </script>
     @endpush
 @endif

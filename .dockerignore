@@ -17,3 +17,8 @@ coverage
 artifacts
 docs/*.pdf
 .DS_Store
+.github
+.githooks
+tests
+docs
+scripts

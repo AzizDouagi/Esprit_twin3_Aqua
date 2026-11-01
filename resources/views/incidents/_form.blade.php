@@ -45,7 +45,7 @@
         <label for="statut" class="form-label">Statut</label>
         <select class="form-select @error('statut') is-invalid @enderror" id="statut" name="statut">
             <option value="">Choisir...</option>
-            @foreach ($statuts as $statut)
+            @foreach (isset($incident) ? array_merge([$incident->statut], $incident->transitionsPossibles()) : $statuts as $statut)
                 <option value="{{ $statut }}" @selected(old('statut', $incident->statut ?? 'Ouvert') === $statut)>{{ $statut }}</option>
             @endforeach
         </select>

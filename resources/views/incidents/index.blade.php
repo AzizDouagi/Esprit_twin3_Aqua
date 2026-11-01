@@ -85,11 +85,13 @@
                             <td class="text-end">
                                 <a class="btn btn-sm btn-outline-primary" href="{{ route('incidents.show', $incident) }}" title="Voir"><i class="bi bi-eye"></i></a>
                                 <a class="btn btn-sm btn-outline-secondary" href="{{ route('incidents.edit', $incident) }}" title="Modifier"><i class="bi bi-pencil"></i></a>
+                                @can('delete', $incident)
                                 <form action="{{ route('incidents.destroy', $incident) }}" method="POST" class="d-inline" onsubmit="return confirm('Supprimer cet incident ?')">
                                     @csrf
                                     @method('DELETE')
                                     <button class="btn btn-sm btn-outline-danger" type="submit" title="Supprimer"><i class="bi bi-trash"></i></button>
                                 </form>
+                                @endcan
                             </td>
                         </tr>
                     @empty

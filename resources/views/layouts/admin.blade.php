@@ -4,8 +4,7 @@
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <title>@yield('title', 'BackOffice') - AquaSecure</title>
-    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.8/dist/css/bootstrap.min.css" rel="stylesheet">
-    <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.13.1/font/bootstrap-icons.min.css" rel="stylesheet">
+    @vite(['resources/css/app.css', 'resources/js/app.js'])
     @stack('head')
     <style>
         :root {
@@ -21,7 +20,7 @@
             background: rgba(255, 255, 255, .18); border-radius: .5rem;
         }
         .sidebar {
-            background: #fff; border-right: 1px solid #e5e7eb; min-height: calc(100vh - 56px);
+            background: #fff; border-right: 1px solid #e5e7eb;
         }
         .sidebar .nav-link { color: #334155; border-radius: .5rem; margin-bottom: .25rem; }
         .sidebar .nav-link.active, .sidebar .nav-link:hover { background: var(--aqua-soft); color: var(--aqua-primary); }
@@ -33,18 +32,25 @@
         .btn-aqua { background: var(--aqua-primary); border-color: var(--aqua-primary); color: #fff; }
         .btn-aqua:hover { background: #036082; border-color: #036082; color: #fff; }
         .page-shell { max-width: 1180px; }
+        main { min-width: 0; }
+        @media (min-width: 992px) { .sidebar { min-height: calc(100vh - 56px); } }
+        @media (max-width: 991px) {
+            .sidebar { border-right: 0; border-bottom: 1px solid #e5e7eb; }
+            .sidebar .nav { flex-direction: row !important; flex-wrap: wrap; gap: .25rem; }
+            .sidebar .nav-link { font-size: .85rem; }
+        }
     </style>
 </head>
 <body>
     <nav class="navbar navbar-expand-lg navbar-dark navbar-aqua sticky-top">
-        <div class="container-fluid px-4">
+        <div class="container-fluid px-3 gap-2">
             <a class="navbar-brand fw-bold d-flex align-items-center gap-2" href="{{ route('dashboard') }}">
                 <span class="brand-mark"><i class="bi bi-droplet-half"></i></span>
                 AquaSecure
             </a>
-            <div class="d-flex align-items-center gap-3">
+            <div class="d-flex align-items-center gap-2">
                 <a class="btn btn-sm btn-outline-light" href="{{ route('front.home') }}">
-                    <i class="bi bi-globe2 me-1"></i> FrontOffice
+                    <i class="bi bi-globe2"></i><span class="d-none d-sm-inline ms-1">FrontOffice</span>
                 </a>
                 @stack('navbar-extra')
                 @include('partials.notifications-bell', ['light' => true])
@@ -100,7 +106,6 @@
             </main>
         </div>
     </div>
-    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.8/dist/js/bootstrap.bundle.min.js"></script>
     @stack('scripts')
 </body>
 </html>

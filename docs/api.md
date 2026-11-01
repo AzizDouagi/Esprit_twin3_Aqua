@@ -9,6 +9,8 @@ curl -X POST http://localhost:8000/api/v1/auth/token \
   -d email=admin@aquasecure.test -d password='<mot de passe du seeder>' -d device_name=cli
 # => {"token":"1|...","token_type":"Bearer"}
 ```
+Le compte doit être actif et son email vérifié. Si la 2FA est activée et confirmée, ajouter `code=123456` (code TOTP courant en chaîne) ; la seule paire email/mot de passe ne suffit pas. Le token est un secret à conserver hors du dépôt.
+
 Puis `Authorization: Bearer <token>` + `Accept: application/json`. `DELETE /auth/token` révoque le jeton courant ; `GET /me` renvoie rôles et permissions. Limites : 10 req/min sur `/auth/token`, 120 req/min ensuite.
 
 ## Endpoints
@@ -24,6 +26,8 @@ Puis `Authorization: Bearer <token>` + `Accept: application/json`. `DELETE /auth
 | POST | `/incidents` | `incidents.manage`/`incidents.report` | Création (le déclarant = utilisateur du jeton) |
 | GET/PUT | `/incidents/{id}` | policy `IncidentPolicy` | Détail / modification |
 | DELETE | `/incidents/{id}` | rôle admin | Suppression |
+
+Les comptes désactivés sont refusés et leurs jetons sont révoqués à la désactivation. Les transitions Ouvert → En cours → Résolu sont aussi imposées aux mises à jour API. Le rôle user peut créer uniquement un incident Ouvert, sans assignation de technicien. Les filtres rejettent les types incorrects, les tris non autorisés et une période inversée (422).
 
 Les autorisations sont appliquées côté serveur par les mêmes Policies / Form Requests que le back office. Erreurs : `401` (non authentifié), `403` (interdit), `404`, `422` (validation, corps `{"message","errors":{...}}`), `429` (limite de débit).
 

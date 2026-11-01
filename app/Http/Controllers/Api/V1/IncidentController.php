@@ -4,28 +4,20 @@ namespace App\Http\Controllers\Api\V1;
 
 use App\Http\Controllers\Controller;
 use App\Http\Controllers\IncidentController as WebIncidentController;
+use App\Http\Requests\IncidentFilterRequest;
 use App\Http\Requests\StoreIncidentRequest;
 use App\Http\Requests\UpdateIncidentRequest;
 use App\Http\Resources\IncidentResource;
 use App\Models\Incident;
 use Illuminate\Http\JsonResponse;
-use Illuminate\Http\Request;
 use Illuminate\Http\Resources\Json\AnonymousResourceCollection;
 use Illuminate\Http\Response;
 
 class IncidentController extends Controller
 {
-    public function index(Request $request): AnonymousResourceCollection
+    public function index(IncidentFilterRequest $request): AnonymousResourceCollection
     {
         $this->authorize('viewAny', Incident::class);
-
-        $request->validate([
-            'statut' => ['nullable', 'in:'.implode(',', Incident::STATUTS)],
-            'gravite' => ['nullable', 'in:'.implode(',', Incident::GRAVITES)],
-            'du' => ['nullable', 'date'],
-            'au' => ['nullable', 'date'],
-            'per_page' => ['nullable', 'integer', 'between:1,100'],
-        ]);
 
         $incidents = Incident::with(['infrastructure', 'technicien'])
             ->filtrer($request->only(WebIncidentController::FILTRES))
