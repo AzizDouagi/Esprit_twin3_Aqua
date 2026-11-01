@@ -39,7 +39,7 @@ class RolesAndPermissionsSeeder extends Seeder
             'admin.access', 'incidents.manage', 'incidents.report', 'maintenances.manage', 'ai.use',
         ]);
 
-        Role::findOrCreate(User::ROLE_USER, 'web')->syncPermissions(['incidents.report']);
+        Role::findOrCreate(User::ROLE_USER, 'web')->syncPermissions(['incidents.report', 'ai.use']);
 
         app(PermissionRegistrar::class)->forgetCachedPermissions();
     }

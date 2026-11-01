@@ -15,6 +15,7 @@
 @endsection
 
 @section('content')
+    @can('ai.use')<div class="d-flex flex-wrap gap-2 mb-3"><a class="btn btn-outline-primary" href="{{ route('ai.risk', $infrastructure) }}">Score de risque</a><a class="btn btn-outline-primary" href="{{ route('ai.report', $infrastructure) }}">Rapport mensuel IA</a></div>@endcan
     <section class="bg-white border rounded-2 p-4 mb-4">
         <div class="row g-3">
             <div class="col-md-4"><div class="text-secondary small">Type</div><div class="fw-semibold">{{ $infrastructure->type }}</div></div>
