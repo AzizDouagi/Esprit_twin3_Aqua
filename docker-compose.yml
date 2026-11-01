@@ -1,0 +1,111 @@
+x-runtime: &runtime
+  image: ${APP_IMAGE:-aquasecure-app:dev}
+  build:
+    context: .
+    target: app
+  environment: &environment
+    APP_NAME: AquaSecure
+    APP_ENV: local
+    APP_DEBUG: "true"
+    APP_KEY: ${APP_KEY:-}
+    APP_URL: ${APP_URL:-http://localhost:8080}
+    APP_LOCALE: fr
+    APP_FALLBACK_LOCALE: fr
+    DB_CONNECTION: mysql
+    DB_HOST: mysql
+    DB_PORT: 3306
+    DB_DATABASE: ${DB_DATABASE:-aquasecure}
+    DB_USERNAME: ${DB_USERNAME:-aquasecure}
+    DB_PASSWORD: ${DB_PASSWORD:-local-change-me}
+    SESSION_DRIVER: database
+    CACHE_STORE: database
+    QUEUE_CONNECTION: database
+    MAIL_MAILER: smtp
+    MAIL_HOST: mailpit
+    MAIL_PORT: 1025
+    MAIL_FROM_ADDRESS: demo@aquasecure.test
+    MAIL_FROM_NAME: AquaSecure
+    LOG_CHANNEL: json
+    AI_PROVIDER: ${AI_PROVIDER:-fake}
+    ANTHROPIC_API_KEY: ${ANTHROPIC_API_KEY:-}
+    AI_MODEL: ${AI_MODEL:-claude-sonnet-5-5}
+  volumes:
+    - storage:/var/www/html/storage
+  restart: unless-stopped
+  security_opt: ["no-new-privileges:true"]
+services:
+  mysql:
+    image: mysql:8.4
+    environment:
+      MYSQL_DATABASE: ${DB_DATABASE:-aquasecure}
+      MYSQL_USER: ${DB_USERNAME:-aquasecure}
+      MYSQL_PASSWORD: ${DB_PASSWORD:-local-change-me}
+      MYSQL_ROOT_PASSWORD: ${DB_ROOT_PASSWORD:-local-root-change-me}
+    volumes: ["mysql-data:/var/lib/mysql"]
+    healthcheck:
+      test: ["CMD-SHELL", "MYSQL_PWD=$$MYSQL_PASSWORD mysql --protocol=tcp -h 127.0.0.1 -u$$MYSQL_USER -D $$MYSQL_DATABASE -e 'SELECT 1' >/dev/null"]
+      interval: 5s
+      timeout: 5s
+      retries: 30
+    restart: unless-stopped
+  migrate:
+    <<: *runtime
+    command: ["php", "artisan", "migrate", "--force"]
+    restart: "no"
+    depends_on:
+      mysql: {condition: service_healthy}
+  app:
+    <<: *runtime
+    depends_on:
+      migrate: {condition: service_completed_successfully}
+    healthcheck:
+      test: ["CMD-SHELL", "SCRIPT_NAME=/ping SCRIPT_FILENAME=/ping REQUEST_METHOD=GET cgi-fcgi -bind -connect 127.0.0.1:9000 | grep -q pong"]
+      interval: 10s
+      timeout: 5s
+      retries: 10
+  nginx:
+    image: ${WEB_IMAGE:-aquasecure-web:dev}
+    build: {context: ., target: web}
+    ports: ["127.0.0.1:${APP_PORT:-8080}:8080"]
+    volumes: ["storage:/var/www/html/storage:ro"]
+    depends_on:
+      app: {condition: service_healthy}
+    healthcheck:
+      test: ["CMD", "wget", "-qO-", "http://127.0.0.1:8080/health"]
+      interval: 15s
+      timeout: 5s
+      retries: 10
+    restart: unless-stopped
+  queue:
+    <<: *runtime
+    command: ["php", "artisan", "queue:work", "--sleep=3", "--tries=3", "--timeout=60", "--max-time=3600"]
+    stop_grace_period: 75s
+    depends_on:
+      app: {condition: service_healthy}
+    healthcheck:
+      test: ["CMD", "php", "-r", "exit(str_contains(file_get_contents('/proc/1/cmdline'), 'queue:work') ? 0 : 1);"]
+      interval: 30s
+  scheduler:
+    <<: *runtime
+    command: ["php", "artisan", "schedule:work"]
+    depends_on:
+      app: {condition: service_healthy}
+    healthcheck:
+      test: ["CMD", "php", "-r", "exit(str_contains(file_get_contents('/proc/1/cmdline'), 'schedule:work') ? 0 : 1);"]
+      interval: 30s
+  mailpit:
+    image: axllent/mailpit:v1.27
+    ports: ["127.0.0.1:8025:8025"]
+    healthcheck:
+      test: ["CMD", "/mailpit", "readyz"]
+      interval: 15s
+  phpmyadmin:
+    image: phpmyadmin:5.2
+    profiles: [tools]
+    environment: {PMA_HOST: mysql}
+    ports: ["127.0.0.1:8081:80"]
+    depends_on:
+      mysql: {condition: service_healthy}
+volumes:
+  storage:
+  mysql-data:

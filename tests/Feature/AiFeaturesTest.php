@@ -111,6 +111,6 @@ class AiFeaturesTest extends TestCase
         $reasons = app(AnomalyDetector::class)->reasons($point);
         $this->assertStringContainsString('pression', implode(';', $reasons));
         config(['aquasecure.anomalies.methode' => 'moyenne_mobile']);
-        $this->assertStringContainsString('moyenne mobile',implode(';',app(AnomalyDetector::class)->reasons($point)));
+        $this->assertStringContainsString('moyenne mobile', implode(';', app(AnomalyDetector::class)->reasons($point)));
     }
 }

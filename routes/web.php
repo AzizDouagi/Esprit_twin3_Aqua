@@ -11,6 +11,7 @@ use App\Http\Controllers\DashboardController;
 use App\Http\Controllers\DeclarationController;
 use App\Http\Controllers\EspaceController;
 use App\Http\Controllers\FrontOfficeController;
+use App\Http\Controllers\HealthController;
 use App\Http\Controllers\IncidentCommentaireController;
 use App\Http\Controllers\IncidentController;
 use App\Http\Controllers\IncidentExportController;
@@ -97,3 +98,5 @@ Route::middleware(['auth', 'verified', 'permission:admin.access', 'permission:ai
     Route::get('anomalies', [AnomalyController::class, 'index'])->name('anomalies');
     Route::post('anomalies/{suggestion}/accepter', [AnomalyController::class, 'accept'])->name('anomalies.accept');
 });
+
+Route::get('/health', HealthController::class)->name('health');

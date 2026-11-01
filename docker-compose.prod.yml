@@ -1,0 +1,74 @@
+# Fichier autonome : ne pas le combiner avec docker-compose.yml.
+x-runtime: &runtime
+  image: ${APP_IMAGE:?APP_IMAGE required}
+  env_file: ["${APP_ENV_FILE:-.env.production}"]
+  environment:
+    APP_ENV: production
+    APP_DEBUG: "false"
+    LOG_CHANNEL: json
+    DB_HOST: mysql
+  volumes: ["storage:/var/www/html/storage"]
+  restart: unless-stopped
+  security_opt: ["no-new-privileges:true"]
+services:
+  mysql:
+    image: mysql:8.4
+    environment:
+      MYSQL_DATABASE: ${DB_DATABASE:-aquasecure}
+      MYSQL_USER: ${DB_USERNAME:-aquasecure}
+      MYSQL_PASSWORD: ${DB_PASSWORD:?DB_PASSWORD required}
+      MYSQL_ROOT_PASSWORD: ${DB_ROOT_PASSWORD:?DB_ROOT_PASSWORD required}
+    volumes: ["mysql-data:/var/lib/mysql"]
+    restart: unless-stopped
+    healthcheck:
+      test: ["CMD-SHELL", "MYSQL_PWD=$$MYSQL_PASSWORD mysql --protocol=tcp -h 127.0.0.1 -u$$MYSQL_USER -D $$MYSQL_DATABASE -e 'SELECT 1' >/dev/null"]
+      interval: 10s
+      timeout: 5s
+      retries: 30
+  migrate:
+    <<: *runtime
+    command: ["php", "artisan", "migrate", "--force"]
+    restart: "no"
+    depends_on:
+      mysql: {condition: service_healthy}
+  app:
+    <<: *runtime
+    depends_on:
+      migrate: {condition: service_completed_successfully}
+    healthcheck:
+      test: ["CMD-SHELL", "SCRIPT_NAME=/ping SCRIPT_FILENAME=/ping REQUEST_METHOD=GET cgi-fcgi -bind -connect 127.0.0.1:9000 | grep -q pong"]
+      interval: 10s
+      timeout: 5s
+      retries: 10
+  nginx:
+    image: ${WEB_IMAGE:?WEB_IMAGE required}
+    ports: ["127.0.0.1:${APP_PORT:-8080}:8080"]
+    volumes: ["storage:/var/www/html/storage:ro"]
+    restart: unless-stopped
+    depends_on:
+      app: {condition: service_healthy}
+    healthcheck:
+      test: ["CMD", "wget", "-qO-", "http://127.0.0.1:8080/health"]
+      interval: 15s
+      timeout: 5s
+      retries: 10
+  queue:
+    <<: *runtime
+    command: ["php", "artisan", "queue:work", "--sleep=3", "--tries=3", "--timeout=60", "--max-time=3600"]
+    stop_grace_period: 75s
+    depends_on:
+      app: {condition: service_healthy}
+    healthcheck:
+      test: ["CMD", "php", "-r", "exit(str_contains(file_get_contents('/proc/1/cmdline'), 'queue:work') ? 0 : 1);"]
+      interval: 30s
+  scheduler:
+    <<: *runtime
+    command: ["php", "artisan", "schedule:work"]
+    depends_on:
+      app: {condition: service_healthy}
+    healthcheck:
+      test: ["CMD", "php", "-r", "exit(str_contains(file_get_contents('/proc/1/cmdline'), 'schedule:work') ? 0 : 1);"]
+      interval: 30s
+volumes:
+  storage:
+  mysql-data:
