@@ -4,3 +4,6 @@ import Chart from 'chart.js/auto';
 import L from 'leaflet';
 window.Chart = Chart;
 window.L = L;
+if (document.getElementById('assistant-chat')) {
+    import('./assistant');
+}
