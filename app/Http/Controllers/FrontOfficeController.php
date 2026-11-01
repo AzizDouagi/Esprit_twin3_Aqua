@@ -21,6 +21,30 @@ class FrontOfficeController extends Controller
         ]);
     }
 
+    public function carte(): View
+    {
+        return view('front.carte', ['points' => $this->pointsCarte(false)]);
+    }
+
+    /**
+     * @return list<array<string, mixed>>
+     */
+    public function pointsCarte(bool $admin = false): array
+    {
+        return Infrastructure::withCount('incidents')
+            ->whereNotNull('latitude')->whereNotNull('longitude')
+            ->get()
+            ->map(fn (Infrastructure $i) => [
+                'nom' => $i->nom,
+                'lat' => $i->latitude,
+                'lng' => $i->longitude,
+                'etat' => $i->etat,
+                'couleur' => $i->couleurEtat(),
+                'incidents' => $i->incidents_count,
+                'url' => $admin ? route('infrastructures.show', $i) : route('front.infrastructures.show', $i),
+            ])->all();
+    }
+
     public function infrastructures(): View
     {
         $infrastructures = Infrastructure::withCount('incidents')

@@ -5,9 +5,14 @@
 @section('eyebrow', 'Gestion du réseau')
 
 @section('actions')
-    <a href="{{ route('infrastructures.create') }}" class="btn btn-aqua">
-        <i class="bi bi-plus-circle me-1"></i> Ajouter
-    </a>
+    <div class="d-flex flex-wrap gap-2">
+        <a href="{{ route('infrastructures.export-csv', request()->query()) }}" class="btn btn-outline-secondary"><i class="bi bi-filetype-csv me-1"></i> CSV</a>
+        <a href="{{ route('infrastructures.export-pdf', request()->query()) }}" class="btn btn-outline-secondary"><i class="bi bi-file-earmark-pdf me-1"></i> PDF</a>
+        @can('create', App\Models\Infrastructure::class)
+            <a href="{{ route('infrastructures.corbeille') }}" class="btn btn-outline-secondary"><i class="bi bi-trash3 me-1"></i> Corbeille</a>
+            <a href="{{ route('infrastructures.create') }}" class="btn btn-aqua"><i class="bi bi-plus-circle me-1"></i> Ajouter</a>
+        @endcan
+    </div>
 @endsection
 
 @section('content')
@@ -55,12 +60,16 @@
                             <td>{{ $infrastructure->incidents_count }}</td>
                             <td class="text-end">
                                 <a class="btn btn-sm btn-outline-primary" href="{{ route('infrastructures.show', $infrastructure) }}" title="Voir"><i class="bi bi-eye"></i></a>
-                                <a class="btn btn-sm btn-outline-secondary" href="{{ route('infrastructures.edit', $infrastructure) }}" title="Modifier"><i class="bi bi-pencil"></i></a>
-                                <form action="{{ route('infrastructures.destroy', $infrastructure) }}" method="POST" class="d-inline" onsubmit="return confirm('Supprimer cette infrastructure et ses incidents associés ?')">
-                                    @csrf
-                                    @method('DELETE')
-                                    <button class="btn btn-sm btn-outline-danger" type="submit" title="Supprimer"><i class="bi bi-trash"></i></button>
-                                </form>
+                                @can('update', $infrastructure)
+                                    <a class="btn btn-sm btn-outline-secondary" href="{{ route('infrastructures.edit', $infrastructure) }}" title="Modifier"><i class="bi bi-pencil"></i></a>
+                                @endcan
+                                @can('delete', $infrastructure)
+                                    <form action="{{ route('infrastructures.destroy', $infrastructure) }}" method="POST" class="d-inline" onsubmit="return confirm('Placer cette infrastructure dans la corbeille ?')">
+                                        @csrf
+                                        @method('DELETE')
+                                        <button class="btn btn-sm btn-outline-danger" type="submit" title="Corbeille"><i class="bi bi-trash"></i></button>
+                                    </form>
+                                @endcan
                             </td>
                         </tr>
                     @empty
