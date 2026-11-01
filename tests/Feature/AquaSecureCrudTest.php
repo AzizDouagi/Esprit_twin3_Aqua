@@ -91,6 +91,9 @@ class AquaSecureCrudTest extends TestCase
             ->assertSee('Fuite test sur canalisation')
             ->assertSee('Station Nord Test');
 
+        $this->put(route('incidents.update', $incident), [...$payload, 'statut' => 'En cours'])
+            ->assertRedirect(route('incidents.show', $incident));
+
         $this->put(route('incidents.update', $incident), [
             ...$payload,
             'statut' => 'Résolu',

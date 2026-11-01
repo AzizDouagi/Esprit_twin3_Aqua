@@ -2,11 +2,13 @@
 
 namespace App\Http\Controllers;
 
+use App\Http\Requests\IncidentFilterRequest;
 use App\Http\Requests\StoreIncidentRequest;
 use App\Http\Requests\UpdateIncidentRequest;
 use App\Models\Incident;
 use App\Models\Infrastructure;
 use App\Models\User;
+use App\Rules\ActiveTechnician;
 use Illuminate\Database\Eloquent\Collection;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
@@ -17,7 +19,7 @@ class IncidentController extends Controller
 {
     public const FILTRES = ['search', 'statut', 'gravite', 'infrastructure_id', 'technicien_id', 'du', 'au'];
 
-    public function index(Request $request): View
+    public function index(IncidentFilterRequest $request): View
     {
         $this->authorize('viewAny', Incident::class);
 
@@ -101,7 +103,7 @@ class IncidentController extends Controller
         $this->authorize('update', $incident);
 
         $data = $request->validate([
-            'technicien_id' => ['nullable', Rule::exists('users', 'id')->where('actif', true)],
+            'technicien_id' => ['nullable', 'integer', new ActiveTechnician],
         ]);
 
         $incident->update(['technicien_id' => $data['technicien_id'] ?? null]);
