@@ -1,0 +1,1 @@
+<div class="alert alert-info mt-3" role="status">Généré par IA — aide à la décision à vérifier. Fournisseur : {{ $result['provider'] }}{{ $result['provider'] === 'fake' ? ' (heuristique locale)' : '' }}. @if($result['degraded']) Mode dégradé après indisponibilité du service distant. @endif @if($result['cached']) Réponse en cache. @endif</div>

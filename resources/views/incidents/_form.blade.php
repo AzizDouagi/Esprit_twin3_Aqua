@@ -63,7 +63,9 @@
     </div>
     <div class="col-12">
         <label for="description" class="form-label">Description</label>
-        <textarea class="form-control @error('description') is-invalid @enderror" id="description" name="description" rows="5">{{ old('description', $incident->description ?? '') }}</textarea>
+        <textarea class="form-control @include('ai.classify-button')
+        @error('description') is-invalid @enderror" id="description" name="description" rows="5">{{ old('description', $incident->description ?? '') }}</textarea>
+        @include('ai.classify-button')
         @error('description') <div class="invalid-feedback">{{ $message }}</div> @enderror
     </div>
 </div>
