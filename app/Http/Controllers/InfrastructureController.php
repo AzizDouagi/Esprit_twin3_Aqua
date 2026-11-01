@@ -5,6 +5,8 @@ namespace App\Http\Controllers;
 use App\Http\Requests\StoreInfrastructureRequest;
 use App\Http\Requests\UpdateInfrastructureRequest;
 use App\Models\Infrastructure;
+use App\Models\Mesure;
+use App\Services\MesureService;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use Illuminate\View\View;
@@ -68,7 +70,7 @@ class InfrastructureController extends Controller
     /**
      * Display the specified resource.
      */
-    public function show(Infrastructure $infrastructure): View
+    public function show(Infrastructure $infrastructure, MesureService $mesures): View
     {
         $this->authorize('view', $infrastructure);
 
@@ -76,7 +78,13 @@ class InfrastructureController extends Controller
             'incidents' => fn ($query) => $query->latest('date_incident')->latest(),
         ]);
 
-        return view('infrastructures.show', compact('infrastructure'));
+        return view('infrastructures.show', [
+            'infrastructure' => $infrastructure,
+            'serie' => $mesures->serieJournaliere($infrastructure, 30),
+            'indicateurs' => $mesures->indicateurs($infrastructure),
+            'grandeurs' => Mesure::GRANDEURS,
+            'maintenances' => $infrastructure->maintenances()->with('technicien')->latest('date_prevue')->take(5)->get(),
+        ]);
     }
 
     /**
@@ -116,6 +124,6 @@ class InfrastructureController extends Controller
 
         return redirect()
             ->route('infrastructures.index')
-            ->with('success', 'Infrastructure supprimée avec ses incidents associés.');
+            ->with('success', 'Infrastructure placée dans la corbeille (restauration possible).');
     }
 }

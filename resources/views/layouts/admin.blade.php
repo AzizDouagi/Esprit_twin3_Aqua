@@ -6,6 +6,7 @@
     <title>@yield('title', 'BackOffice') - AquaSecure</title>
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.8/dist/css/bootstrap.min.css" rel="stylesheet">
     <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.13.1/font/bootstrap-icons.min.css" rel="stylesheet">
+    @stack('head')
     <style>
         :root {
             --aqua-primary: #075985;
@@ -63,6 +64,14 @@
                     <a class="nav-link {{ request()->routeIs('incidents.*') ? 'active' : '' }}" href="{{ route('incidents.index') }}">
                         <i class="bi bi-exclamation-octagon me-2"></i>Incidents
                     </a>
+                    @can('maintenances.manage')
+                        <a class="nav-link {{ request()->routeIs('maintenances.*') ? 'active' : '' }}" href="{{ route('maintenances.index') }}">
+                            <i class="bi bi-tools me-2"></i>Maintenance
+                        </a>
+                    @endcan
+                    <a class="nav-link {{ request()->routeIs('carte') ? 'active' : '' }}" href="{{ route('carte') }}">
+                        <i class="bi bi-geo-alt me-2"></i>Carte
+                    </a>
                     @can('users.manage')
                         <a class="nav-link {{ request()->routeIs('admin.users.*') ? 'active' : '' }}" href="{{ route('admin.users.index') }}">
                             <i class="bi bi-people me-2"></i>Utilisateurs
@@ -87,5 +96,6 @@
         </div>
     </div>
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.8/dist/js/bootstrap.bundle.min.js"></script>
+    @stack('scripts')
 </body>
 </html>

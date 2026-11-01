@@ -6,6 +6,7 @@
     <title>@yield('title', 'Accueil') - AquaSecure</title>
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.8/dist/css/bootstrap.min.css" rel="stylesheet">
     <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.13.1/font/bootstrap-icons.min.css" rel="stylesheet">
+    @stack('head')
     <style>
         :root { --aqua-primary: #075985; --aqua-secondary: #0891b2; --aqua-soft: #ecfeff; }
         body { background: #f8fafc; color: #0f172a; }
@@ -37,6 +38,7 @@
                 <div class="navbar-nav ms-auto align-items-lg-center gap-lg-2">
                     <a class="nav-link {{ request()->routeIs('front.home') ? 'active' : '' }}" href="{{ route('front.home') }}">Accueil</a>
                     <a class="nav-link {{ request()->routeIs('front.infrastructures.*') ? 'active' : '' }}" href="{{ route('front.infrastructures.index') }}">Infrastructures</a>
+                    <a class="nav-link {{ request()->routeIs('carte') ? 'active' : '' }}" href="{{ route('carte') }}">Carte</a>
                     @auth
                         <a class="nav-link {{ request()->routeIs('espace.*') ? 'active' : '' }}" href="{{ route('espace.index') }}">Mon espace</a>
                         @can('admin.access')
@@ -58,5 +60,6 @@
         </div>
     </footer>
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.8/dist/js/bootstrap.bundle.min.js"></script>
+    @stack('scripts')
 </body>
 </html>

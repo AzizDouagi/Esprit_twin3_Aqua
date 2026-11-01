@@ -27,6 +27,8 @@ class StoreInfrastructureRequest extends FormRequest
             'nom' => ['required', 'string', 'max:150'],
             'type' => ['required', Rule::in(Infrastructure::TYPES)],
             'localisation' => ['required', 'string', 'max:180'],
+            'latitude' => ['nullable', 'numeric', 'between:-90,90'],
+            'longitude' => ['nullable', 'numeric', 'between:-180,180'],
             'etat' => ['required', Rule::in(Infrastructure::ETATS)],
             'date_installation' => ['nullable', 'date'],
             'description' => ['nullable', 'string', 'max:2000'],

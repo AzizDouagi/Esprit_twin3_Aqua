@@ -24,6 +24,8 @@ class InfrastructureFactory extends Factory
             'nom' => $type.' '.fake()->unique()->bothify('AQ-###'),
             'type' => $type,
             'localisation' => fake()->randomElement($zones).', Grand Tunis',
+            'latitude' => fake()->randomFloat(6, 36.74, 36.92),
+            'longitude' => fake()->randomFloat(6, 10.02, 10.32),
             'etat' => fake()->randomElement(Infrastructure::ETATS),
             'date_installation' => fake()->dateTimeBetween('-18 years', '-3 months'),
             'description' => fake()->sentence(18),
