@@ -7,7 +7,7 @@ COPY resources ./resources
 COPY vite.config.js ./
 RUN npm run build
 
-FROM php:8.3-fpm-bookworm AS php-base
+FROM php:8.5-fpm-bookworm AS php-base
 RUN apt-get update && apt-get install -y --no-install-recommends libicu-dev libzip-dev libonig-dev libpng-dev libjpeg62-turbo-dev libfreetype6-dev libsqlite3-dev libfcgi-bin unzip \
     && docker-php-ext-configure gd --with-freetype --with-jpeg \
     && docker-php-ext-install -j"$(nproc)" pdo_mysql pdo_sqlite mbstring intl zip gd bcmath pcntl opcache \
