@@ -7,11 +7,12 @@ use Illuminate\Database\Eloquent\Casts\Attribute;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\HasMany;
+use Illuminate\Database\Eloquent\SoftDeletes;
 
 class Infrastructure extends Model
 {
     /** @use HasFactory<InfrastructureFactory> */
-    use HasFactory;
+    use HasFactory, SoftDeletes;
 
     public const TYPES = [
         'Station de pompage',
@@ -31,6 +32,8 @@ class Infrastructure extends Model
         'nom',
         'type',
         'localisation',
+        'latitude',
+        'longitude',
         'etat',
         'date_installation',
         'description',
@@ -40,12 +43,34 @@ class Infrastructure extends Model
     {
         return [
             'date_installation' => 'date',
+            'latitude' => 'float',
+            'longitude' => 'float',
         ];
     }
 
     public function incidents(): HasMany
     {
         return $this->hasMany(Incident::class);
+    }
+
+    public function mesures(): HasMany
+    {
+        return $this->hasMany(Mesure::class);
+    }
+
+    public function maintenances(): HasMany
+    {
+        return $this->hasMany(Maintenance::class);
+    }
+
+    public function couleurEtat(): string
+    {
+        return match ($this->etat) {
+            'Fonctionnelle' => '#198754',
+            'Maintenance' => '#ffc107',
+            'Hors service' => '#dc3545',
+            default => '#6c757d',
+        };
     }
 
     protected function statutBadge(): Attribute

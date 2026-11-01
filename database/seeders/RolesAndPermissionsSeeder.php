@@ -17,6 +17,7 @@ class RolesAndPermissionsSeeder extends Seeder
         'infrastructures.delete',
         'incidents.manage',
         'incidents.report',
+        'maintenances.manage',
         'users.manage',
         'ai.use',
     ];
@@ -35,7 +36,7 @@ class RolesAndPermissionsSeeder extends Seeder
         Role::findOrCreate(User::ROLE_ADMIN, 'web')->syncPermissions(self::PERMISSIONS);
 
         Role::findOrCreate(User::ROLE_TECHNICIEN, 'web')->syncPermissions([
-            'admin.access', 'incidents.manage', 'incidents.report', 'ai.use',
+            'admin.access', 'incidents.manage', 'incidents.report', 'maintenances.manage', 'ai.use',
         ]);
 
         Role::findOrCreate(User::ROLE_USER, 'web')->syncPermissions(['incidents.report']);
