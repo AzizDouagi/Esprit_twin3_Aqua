@@ -10,7 +10,12 @@ use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\HasMany;
+use Illuminate\Support\Carbon;
 
+/**
+ * @property Carbon $date_incident
+ * @property Carbon|null $resolu_le
+ */
 #[ObservedBy(IncidentObserver::class)]
 class Incident extends Model
 {
@@ -66,31 +71,37 @@ class Incident extends Model
         ];
     }
 
+    /** @return BelongsTo<Infrastructure, $this> */
     public function infrastructure(): BelongsTo
     {
         return $this->belongsTo(Infrastructure::class)->withTrashed();
     }
 
+    /** @return BelongsTo<User, $this> */
     public function declarant(): BelongsTo
     {
         return $this->belongsTo(User::class, 'declarant_id');
     }
 
+    /** @return BelongsTo<User, $this> */
     public function technicien(): BelongsTo
     {
         return $this->belongsTo(User::class, 'technicien_id');
     }
 
+    /** @return HasMany<IncidentCommentaire, $this> */
     public function commentaires(): HasMany
     {
         return $this->hasMany(IncidentCommentaire::class)->latest();
     }
 
+    /** @return HasMany<IncidentHistorique, $this> */
     public function historiques(): HasMany
     {
         return $this->hasMany(IncidentHistorique::class)->latest('id');
     }
 
+    /** @return HasMany<IncidentPieceJointe, $this> */
     public function piecesJointes(): HasMany
     {
         return $this->hasMany(IncidentPieceJointe::class);

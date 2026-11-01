@@ -6,7 +6,11 @@ use Database\Factories\MesureFactory;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
+use Illuminate\Support\Carbon;
 
+/**
+ * @property Carbon $mesure_le
+ */
 class Mesure extends Model
 {
     /** @use HasFactory<MesureFactory> */
@@ -40,6 +44,7 @@ class Mesure extends Model
         ];
     }
 
+    /** @return BelongsTo<Infrastructure, $this> */
     public function infrastructure(): BelongsTo
     {
         return $this->belongsTo(Infrastructure::class)->withTrashed();
