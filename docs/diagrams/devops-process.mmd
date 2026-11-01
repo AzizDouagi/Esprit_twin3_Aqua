@@ -1,0 +1,15 @@
+flowchart TB
+    subgraph DEV["DEV : construire"]
+        direction LR
+        P["1. PLANIFIER<br/>besoins, critères<br/>d'acceptation, issues"] --> C["2. CODER<br/>branche feature/*<br/>Conventional Commits"] --> B["3. CONSTRUIRE<br/>Composer, Vite,<br/>images Docker"] --> T["4. TESTER<br/>Pint, PHPStan,<br/>PHPUnit, audits"]
+    end
+    subgraph OPS["OPS : livrer et exploiter"]
+        direction RL
+        R["5. LIVRER<br/>merge --no-ff,<br/>tag vX.Y.Z, GHCR"] --> D["6. DEPLOYER<br/>staging puis<br/>production (SSH)"] --> O["7. EXPLOITER<br/>Compose, queue,<br/>scheduler"] --> M["8. SUPERVISER<br/>/up, /health,<br/>logs, ai_logs"]
+    end
+    T --> R
+    M -. "retours terrain, incidents,<br/>nouveaux besoins" .-> P
+    classDef dev fill:#e0f2fe,stroke:#0369a1,color:#0c4a6e
+    classDef ops fill:#dcfce7,stroke:#15803d,color:#14532d
+    class P,C,B,T dev
+    class R,D,O,M ops
