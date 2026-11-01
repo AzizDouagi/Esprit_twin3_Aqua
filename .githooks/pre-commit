@@ -1,0 +1,6 @@
+#!/bin/sh
+set -eu
+# Vérifie l’arbre de travail ; les mêmes contrôles sont rejoués en CI.
+composer lint
+composer analyse
+php artisan test --compact

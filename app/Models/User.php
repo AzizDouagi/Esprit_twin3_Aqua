@@ -60,11 +60,13 @@ class User extends Authenticatable implements MustVerifyEmail
         ];
     }
 
+    /** @return HasMany<Incident, $this> */
     public function incidentsDeclares(): HasMany
     {
         return $this->hasMany(Incident::class, 'declarant_id');
     }
 
+    /** @return HasMany<Incident, $this> */
     public function incidentsAssignes(): HasMany
     {
         return $this->hasMany(Incident::class, 'technicien_id');

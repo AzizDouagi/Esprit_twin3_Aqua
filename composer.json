@@ -73,6 +73,13 @@
         ],
         "pre-package-uninstall": [
             "Illuminate\\Foundation\\ComposerScripts::prePackageUninstall"
+        ],
+        "lint": "pint --test",
+        "analyse": "phpstan analyse --memory-limit=1G",
+        "ci": [
+            "@lint",
+            "@analyse",
+            "@test"
         ]
     },
     "extra": {
