@@ -11,6 +11,16 @@
         <input type="text" class="form-control @error('localisation') is-invalid @enderror" id="localisation" name="localisation" value="{{ old('localisation', $infrastructure->localisation ?? '') }}">
         @error('localisation') <div class="invalid-feedback">{{ $message }}</div> @enderror
     </div>
+    <div class="col-md-3">
+        <label for="latitude" class="form-label">Latitude</label>
+        <input type="number" step="any" class="form-control @error('latitude') is-invalid @enderror" id="latitude" name="latitude" value="{{ old('latitude', $infrastructure->latitude ?? '') }}">
+        @error('latitude') <div class="invalid-feedback">{{ $message }}</div> @enderror
+    </div>
+    <div class="col-md-3">
+        <label for="longitude" class="form-label">Longitude</label>
+        <input type="number" step="any" class="form-control @error('longitude') is-invalid @enderror" id="longitude" name="longitude" value="{{ old('longitude', $infrastructure->longitude ?? '') }}">
+        @error('longitude') <div class="invalid-feedback">{{ $message }}</div> @enderror
+    </div>
     <div class="col-md-4">
         <label for="type" class="form-label">Type</label>
         <select class="form-select @error('type') is-invalid @enderror" id="type" name="type">
