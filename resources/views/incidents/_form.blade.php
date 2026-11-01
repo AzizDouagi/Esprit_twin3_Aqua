@@ -51,6 +51,16 @@
         </select>
         @error('statut') <div class="invalid-feedback">{{ $message }}</div> @enderror
     </div>
+    <div class="col-md-4">
+        <label for="technicien_id" class="form-label">Technicien assigné</label>
+        <select class="form-select @error('technicien_id') is-invalid @enderror" id="technicien_id" name="technicien_id">
+            <option value="">Non assigné</option>
+            @foreach ($techniciens as $technicien)
+                <option value="{{ $technicien->id }}" @selected((int) old('technicien_id', $incident->technicien_id ?? 0) === $technicien->id)>{{ $technicien->name }}</option>
+            @endforeach
+        </select>
+        @error('technicien_id') <div class="invalid-feedback">{{ $message }}</div> @enderror
+    </div>
     <div class="col-12">
         <label for="description" class="form-label">Description</label>
         <textarea class="form-control @error('description') is-invalid @enderror" id="description" name="description" rows="5">{{ old('description', $incident->description ?? '') }}</textarea>

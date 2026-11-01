@@ -47,6 +47,7 @@
                     <i class="bi bi-globe2 me-1"></i> FrontOffice
                 </a>
                 @stack('navbar-extra')
+                @include('partials.notifications-bell', ['light' => true])
                 @include('partials.user-menu', ['light' => true])
             </div>
         </div>
