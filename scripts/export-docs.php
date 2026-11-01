@@ -2,7 +2,7 @@
 
 use Dompdf\Dompdf;
 use Dompdf\Options;
-use League\CommonMark\CommonMarkConverter;
+use League\CommonMark\GithubFlavoredMarkdownConverter;
 
 require __DIR__.'/../vendor/autoload.php';
 $root = realpath(__DIR__.'/..');
@@ -11,7 +11,7 @@ $output = $argv[2] ?? $root.'/docs/AquaSecure_DevOps.pdf';
 if (! is_file($input)) {
     throw new RuntimeException('Document source introuvable.');
 }
-$converter = new CommonMarkConverter(['html_input' => 'strip', 'allow_unsafe_links' => false]);
+$converter = new GithubFlavoredMarkdownConverter(['html_input' => 'strip', 'allow_unsafe_links' => false]);
 $html = (string) $converter->convert(file_get_contents($input));
 $html = preg_replace_callback('/src="(diagrams\/[^"<>]+\.png)"/', function (array $match) use ($root): string {
     $path = $root.'/docs/'.$match[1];
@@ -27,7 +27,7 @@ $options->set('chroot', [$root.'/docs']);
 $options->set('defaultFont', 'DejaVu Sans');
 $pdf = new Dompdf($options);
 $pdf->setPaper('A4');
-$pdf->loadHtml('<!doctype html><html lang="fr"><head><meta charset="utf-8"><style>body{font-family:DejaVu Sans,sans-serif;font-size:9px;color:#0f172a;line-height:1.4}h1{font-size:22px;color:#075985}h2{font-size:15px;color:#075985;border-bottom:1px solid #cbd5e1;page-break-after:avoid}h3{font-size:12px;page-break-after:avoid}img{max-width:100%;max-height:500px}pre{background:#f1f5f9;padding:8px;white-space:pre-wrap;font-size:8px}code{font-size:8px}table{width:100%;border-collapse:collapse}td,th{border:1px solid #cbd5e1;padding:4px;text-align:left}a{color:#075985}tr{page-break-inside:avoid}</style></head><body>'.$html.'</body></html>');
+$pdf->loadHtml('<!doctype html><html lang="fr"><head><meta charset="utf-8"><style>body{font-family:DejaVu Sans,sans-serif;font-size:10pt;color:#0f172a;line-height:1.35}h1{font-size:23pt;color:#075985}h2{font-size:14pt;color:#075985;border-bottom:1px solid #cbd5e1;page-break-after:avoid}h3{font-size:12pt;page-break-after:avoid}img{max-width:100%;max-height:400pt;display:block;margin:10px auto}pre{background:#f1f5f9;padding:8px;white-space:pre-wrap;font-size:8pt}code{font-size:8pt}table{width:100%;border-collapse:collapse;table-layout:fixed;font-size:9pt}td,th{border:1px solid #cbd5e1;padding:4px;text-align:left;word-wrap:break-word}a{color:#075985}tr{page-break-inside:avoid}</style></head><body>'.$html.'</body></html>');
 $pdf->render();
 if (file_put_contents($output, $pdf->output()) === false) {
     throw new RuntimeException('Écriture PDF impossible.');
