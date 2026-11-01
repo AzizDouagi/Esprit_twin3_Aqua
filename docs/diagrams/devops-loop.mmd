@@ -1,0 +1,8 @@
+flowchart LR
+    P["Planifier : besoins et critères"] --> C["Coder : branche et tests"]
+    C --> B["Construire : Composer, Vite, Docker"]
+    B --> T["Vérifier : Pint, PHPStan, PHPUnit, audits"]
+    T --> R["Livrer : merge et tag"]
+    R --> D["Déployer : staging puis production"]
+    D --> O["Observer : santé, logs et queue"]
+    O --> P

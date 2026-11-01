@@ -1,0 +1,15 @@
+flowchart LR
+    Browser["Navigateur"] --> TLS["Reverse proxy TLS du serveur"]
+    TLS --> Nginx["nginx non-root : 8080"]
+    Nginx -->|FastCGI| App["app : PHP-FPM non-root 9000"]
+    App --> DB[("MySQL 8.4 / volume mysql-data")]
+    App --> Storage[("Volume storage : pièces jointes et avatars")]
+    Nginx -->|avatars seulement| Storage
+    Queue["queue : artisan queue:work"] --> DB
+    Queue --> Storage
+    Scheduler["scheduler : schedule:work"] --> DB
+    Migrate["migrate : tâche ponctuelle"] --> DB
+    App -. local .-> Mailpit["Mailpit : 8025 local"]
+    Queue -. local .-> Mailpit
+    Tools["phpMyAdmin : profil tools local"] -.-> DB
+    App -. optionnel .-> AI["API Anthropic / fake local par défaut"]
