@@ -1,0 +1,109 @@
+name: CI
+on:
+  pull_request:
+  push:
+    branches: ['feature/**', 'devops/**', 'docs/**']
+  workflow_call:
+permissions:
+  contents: read
+jobs:
+  quality:
+    runs-on: ubuntu-latest
+    strategy:
+      fail-fast: false
+      matrix:
+        php: ['8.2', '8.3']
+    services:
+      mysql:
+        image: mysql:8.4
+        env:
+          MYSQL_DATABASE: aquasecure_test
+          MYSQL_ROOT_PASSWORD: test-only-password
+        ports: ['3306:3306']
+        options: >-
+          --health-cmd="mysqladmin ping -h 127.0.0.1 -ptest-only-password"
+          --health-interval=10s --health-timeout=5s --health-retries=20
+    env:
+      APP_ENV: testing
+      DB_CONNECTION: mysql
+      DB_HOST: 127.0.0.1
+      DB_PORT: 3306
+      DB_DATABASE: aquasecure_test
+      DB_USERNAME: root
+      DB_PASSWORD: test-only-password
+      DB_URL: ''
+      CACHE_STORE: array
+      SESSION_DRIVER: array
+      QUEUE_CONNECTION: sync
+      MAIL_MAILER: array
+      AI_PROVIDER: fake
+    steps:
+      - uses: actions/checkout@v4
+      - uses: shivammathur/setup-php@v2
+        with:
+          php-version: ${{ matrix.php }}
+          extensions: mbstring, intl, pdo_mysql, pdo_sqlite, gd, zip, bcmath
+          coverage: xdebug
+          tools: composer:v2
+      - uses: actions/cache@v4
+        with:
+          path: ~/.cache/composer/files
+          key: composer-${{ runner.os }}-${{ matrix.php }}-${{ hashFiles('composer.lock') }}
+          restore-keys: composer-${{ runner.os }}-${{ matrix.php }}-
+      - run: composer validate --strict
+      - run: composer install --prefer-dist --no-interaction --no-progress
+      - name: Configure test application
+        run: |
+          cp .env.example .env
+          php artisan key:generate
+          php artisan migrate:fresh --seed --force
+      - run: composer lint
+      - run: composer analyse
+      - name: Tests and coverage
+        run: |
+          mkdir -p coverage
+          php artisan test --coverage-clover coverage/clover.xml --log-junit coverage/junit.xml
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: php-${{ matrix.php }}-coverage
+          path: coverage/
+          retention-days: 14
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+          cache: npm
+      - run: npm ci
+      - run: npm run build
+      - run: composer audit --locked
+      - run: npm audit --audit-level=high
+      - name: Infrastructure syntax
+        run: |
+          php scripts/check-yaml.php
+          bash -n scripts/deploy.sh scripts/ssh-deploy.sh
+          sh -n docker/entrypoint.sh .githooks/pre-commit
+          docker compose --env-file .env.docker.example config --quiet
+          APP_IMAGE=validation:app WEB_IMAGE=validation:web DB_PASSWORD=placeholder DB_ROOT_PASSWORD=placeholder APP_ENV_FILE=.env.production.example docker compose --env-file .env.production.example -f docker-compose.prod.yml config --quiet
+  images:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: docker/setup-buildx-action@v3
+      - name: Build both runtime targets without publishing
+        run: |
+          docker build --target app -t aquasecure-app:ci .
+          docker build --target web -t aquasecure-web:ci .
+      - name: Compose smoke (isolated CI database)
+        run: |
+          cp .env.docker.example .env.docker
+          printf '\nAPP_IMAGE=aquasecure-app:ci\nWEB_IMAGE=aquasecure-web:ci\n' >> .env.docker
+          printf '\nAPP_KEY=base64:%s\n' "$(openssl rand -base64 32)" >> .env.docker
+          docker compose --env-file .env.docker up -d --wait --wait-timeout 240
+          curl --fail --retry 10 --retry-delay 3 http://127.0.0.1:8080/up
+          curl --fail http://127.0.0.1:8080/health
+      - name: Container logs
+        if: failure()
+        run: docker compose --env-file .env.docker logs --tail=100
+      - name: Stop CI containers
+        if: always()
+        run: docker compose --env-file .env.docker down --volumes

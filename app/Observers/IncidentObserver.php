@@ -62,7 +62,7 @@ class IncidentObserver
     private function valeur(string $champ, mixed $valeur): ?string
     {
         if ($champ === 'technicien_id') {
-            return $valeur ? (User::find($valeur)?->name ?? "#{$valeur}") : 'Non assigné';
+            return $valeur ? (User::query()->whereKey($valeur)->value('name') ?? "#{$valeur}") : 'Non assigné';
         }
 
         return $valeur === null ? null : (string) $valeur;

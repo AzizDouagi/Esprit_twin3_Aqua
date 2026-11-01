@@ -8,7 +8,12 @@ use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Database\Eloquent\SoftDeletes;
+use Illuminate\Support\Carbon;
 
+/**
+ * @property Carbon|null $date_installation
+ * @property array{score: int, niveau: string, couleur: string, facteurs: array} $risque
+ */
 class Infrastructure extends Model
 {
     /** @use HasFactory<InfrastructureFactory> */
@@ -48,16 +53,19 @@ class Infrastructure extends Model
         ];
     }
 
+    /** @return HasMany<Incident, $this> */
     public function incidents(): HasMany
     {
         return $this->hasMany(Incident::class);
     }
 
+    /** @return HasMany<Mesure, $this> */
     public function mesures(): HasMany
     {
         return $this->hasMany(Mesure::class);
     }
 
+    /** @return HasMany<Maintenance, $this> */
     public function maintenances(): HasMany
     {
         return $this->hasMany(Maintenance::class);
