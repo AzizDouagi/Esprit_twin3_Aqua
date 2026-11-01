@@ -1,0 +1,128 @@
+<!doctype html>
+<html lang="fr"><head><meta charset="utf-8"><title>AquaSecure — Dossier DevOps</title>
+<style>
+@page{size:A4;margin:16mm 15mm}
+body{font:10.5pt/1.45 -apple-system,Helvetica,Arial,sans-serif;color:#0f172a}
+h1{font-size:26pt;color:#075985;margin:0 0 4pt}h2{font-size:15pt;color:#075985;border-bottom:2px solid #bae6fd;padding-bottom:3pt;margin-top:18pt;page-break-after:avoid}
+h3{font-size:11.5pt;color:#0c4a6e;margin:12pt 0 4pt;page-break-after:avoid}
+.cover{text-align:center;padding-top:90mm;page-break-after:always}.cover p{font-size:12pt;color:#334155;margin:4pt}
+table{width:100%;border-collapse:collapse;font-size:9.5pt;margin:6pt 0}td,th{border:1px solid #cbd5e1;padding:4pt 6pt;text-align:left;vertical-align:top}th{background:#e0f2fe}
+tr{page-break-inside:avoid}
+figure{margin:8pt 0;page-break-inside:avoid;text-align:center}figure img{max-width:100%;max-height:200mm}
+figcaption{font-size:9pt;color:#475569;margin-top:3pt}
+.shot{border:1px solid #94a3b8;border-radius:4pt}
+code{font:9pt Menlo,monospace;background:#f1f5f9;padding:0 2pt}
+.note{background:#fef9c3;border-left:4px solid #ca8a04;padding:6pt 9pt;margin:8pt 0;font-size:9.5pt}
+.pb{page-break-before:always}
+</style></head><body>
+
+<div class="cover">
+<h1>AquaSecure — Dossier DevOps</h1>
+<p>Application Laravel 12 de supervision d'un réseau d'eau</p>
+<p>Processus DevOps · Pipeline CI/CD · Preuves d'exécution</p>
+<p style="margin-top:30mm">Aziz Douagi — 5TWIN, ESPRIT</p>
+<p>Version v1.1.0 · 1 novembre 2026</p>
+<p>Dépôt : github.com/AzizDouagi/Esprit_twin3_Aqua</p>
+</div>
+
+<h2 style="margin-top:0">1. Objectif et outils</h2>
+<p>Ce document présente la démarche DevOps mise en place pour AquaSecure : un <b>diagramme du processus DevOps</b>, un <b>pipeline</b> allant du développement à l'intégration continue (CI) puis au déploiement (CD), et les <b>preuves d'exécution</b> obtenues dans le terminal.</p>
+<table>
+<tr><th>Besoin</th><th>Outil</th><th>Fichier du dépôt</th></tr>
+<tr><td>Gestion de versions</td><td>Git, GitHub, branches par phase, tags v0.1.0 à v1.1.0</td><td><code>.git</code>, <code>.github/PULL_REQUEST_TEMPLATE.md</code></td></tr>
+<tr><td>Qualité locale</td><td>Hook pre-commit (Pint, PHPStan, tests)</td><td><code>.githooks/pre-commit</code></td></tr>
+<tr><td>Intégration continue</td><td>GitHub Actions</td><td><code>.github/workflows/ci.yml</code></td></tr>
+<tr><td>Conteneurisation</td><td>Docker multi-stage (cibles <code>app</code> et <code>web</code>), Docker Compose</td><td><code>Dockerfile</code>, <code>docker-compose.yml</code>, <code>docker-compose.prod.yml</code></td></tr>
+<tr><td>Livraison</td><td>Publication des images sur GHCR</td><td><code>.github/workflows/cd.yml</code></td></tr>
+<tr><td>Déploiement</td><td>SSH vers staging puis production, smoke tests, approbation d'environnement</td><td><code>.github/workflows/deploy.yml</code>, <code>scripts/ssh-deploy.sh</code></td></tr>
+<tr><td>Maintenance</td><td>Dependabot, modèles d'issues, endpoints <code>/up</code> et <code>/health</code></td><td><code>.github/dependabot.yml</code></td></tr>
+</table>
+
+<h2>2. Diagramme du processus DevOps</h2>
+<figure><img src="diagrams/devops-process.png" alt="Processus DevOps">
+<figcaption>Figure 1 — Boucle DevOps d'AquaSecure : Dev (planifier, coder, construire, tester) puis Ops (livrer, déployer, exploiter, superviser), avec retour d'expérience vers la planification.</figcaption></figure>
+<table>
+<tr><th>Phase</th><th>Ce qui est fait dans AquaSecure</th></tr>
+<tr><td>1. Planifier</td><td>Besoins traduits en phases et critères d'acceptation, issues GitHub (modèles bug et fonctionnalité).</td></tr>
+<tr><td>2. Coder</td><td>Une branche par phase (<code>feature/*</code>, <code>devops/*</code>), commits au format Conventional Commits, tests écrits avec le code.</td></tr>
+<tr><td>3. Construire</td><td><code>composer install</code>, <code>npm run build</code> (Vite), images Docker <code>app</code> (PHP-FPM, non-root) et <code>web</code> (Nginx).</td></tr>
+<tr><td>4. Tester</td><td>Laravel Pint, PHPStan/Larastan, PHPUnit (111 tests), <code>composer audit</code>, <code>npm audit</code>.</td></tr>
+<tr><td>5. Livrer</td><td>Merge <code>--no-ff</code> sur <code>main</code>, tag sémantique <code>vX.Y.Z</code>, images publiées sur GHCR avec les tags sha, semver et latest.</td></tr>
+<tr><td>6. Déployer</td><td>Staging puis production par SSH, avec la même image ; la production exige l'approbation de l'environnement GitHub.</td></tr>
+<tr><td>7. Exploiter</td><td>Compose : MySQL, application, Nginx, worker de file d'attente, scheduler Laravel, Mailpit.</td></tr>
+<tr><td>8. Superviser</td><td>Healthchecks <code>/up</code> et <code>/health</code>, logs applicatifs, journal <code>ai_logs</code> ; les retours alimentent la planification.</td></tr>
+</table>
+
+<h2>3. Pipeline : développement, CI, CD</h2>
+<figure><img src="diagrams/pipeline-cicd.png" alt="Pipeline CI/CD" style="max-height:150mm">
+<figcaption>Figure 2 — Pipeline complet du commit au déploiement.</figcaption></figure>
+
+<h3>3.1 Intégration continue (<code>ci.yml</code>)</h3>
+<p>Déclenchée sur chaque pull request, sur les push des branches <code>feature/**</code>, <code>devops/**</code>, <code>docs/**</code>, et appelée par la CD (<code>workflow_call</code>). Permissions minimales : <code>contents: read</code>.</p>
+<table>
+<tr><th>Job</th><th>Étapes</th></tr>
+<tr><td><b>quality</b> (matrice PHP 8.2 et 8.3, service MySQL 8.4)</td><td><code>composer validate --strict</code> · <code>composer install</code> · <code>migrate:fresh --seed</code> · <code>composer lint</code> (Pint) · <code>composer analyse</code> (PHPStan) · <code>php artisan test</code> avec couverture clover/JUnit exportée en artefact · <code>npm ci</code> et <code>npm run build</code> · <code>composer audit</code> et <code>npm audit</code> · validation YAML, scripts shell et <code>docker compose config</code></td></tr>
+<tr><td><b>images</b></td><td>Build des cibles <code>app</code> et <code>web</code> · <code>docker compose up --wait</code> sur une base isolée · <code>curl</code> sur <code>/up</code> et <code>/health</code> · nettoyage des conteneurs</td></tr>
+</table>
+
+<h3>3.2 Livraison et déploiement continus (<code>cd.yml</code>, <code>deploy.yml</code>)</h3>
+<table>
+<tr><th>Étape</th><th>Condition</th><th>Action</th></tr>
+<tr><td>ci</td><td>push sur <code>main</code> ou tag <code>v*</code></td><td>Réutilise <code>ci.yml</code> ; rien n'est publié si la CI échoue.</td></tr>
+<tr><td>publish</td><td>après <code>ci</code></td><td>Build et push de deux images vers <code>ghcr.io</code> : tags <code>sha-…</code>, semver et <code>latest</code> (sur tag).</td></tr>
+<tr><td>staging</td><td><code>vars.DEPLOY_ENABLED == 'true'</code></td><td>Déploiement SSH : sauvegarde, migrations, <code>up</code>, smoke tests.</td></tr>
+<tr><td>production</td><td>tag <code>v*</code>, après staging, approbation de l'environnement</td><td>Même image que staging ; <code>up</code>, <code>/health</code>, smoke tests.</td></tr>
+<tr><td>rollback</td><td>échec de démarrage ou de smoke</td><td>Retour aux images précédentes ; le schéma de base de données est conservé, la compatibilité reste à vérifier.</td></tr>
+</table>
+<p><b>Secrets et variables GitHub à créer pour un déploiement réel :</b> <code>SSH_HOST</code>, <code>SSH_USER</code>, <code>SSH_PORT</code>, <code>SSH_PRIVATE_KEY</code>, <code>SSH_KNOWN_HOSTS</code>, <code>vars.DEPLOY_PATH</code>, <code>vars.DEPLOY_ENABLED</code>.</p>
+
+<h2>4. Architecture Docker</h2>
+<figure><img src="diagrams/docker-architecture.png" alt="Architecture Docker" style="max-height:150mm">
+<figcaption>Figure 3 — Services Docker Compose : Nginx, application PHP-FPM, MySQL, worker de file d'attente, scheduler, Mailpit.</figcaption></figure>
+<ul>
+<li>Build multi-stage : compilation Vite, puis images de runtime <code>app</code> (utilisateur non-root, OPcache) et <code>web</code> (Nginx unprivileged).</li>
+<li>Healthchecks sur chaque service ; <code>docker compose up --wait</code> attend leur état sain.</li>
+<li>Séparation développement et production : en production, <code>APP_DEBUG=false</code>, aucun phpMyAdmin ni Mailpit, port publié sur 127.0.0.1 uniquement.</li>
+</ul>
+
+<h2 class="pb">5. Preuves d'exécution dans le terminal</h2>
+<p>Les commandes suivantes ont été lancées dans le terminal de la machine <code>azizdouagi@MacBook-Pro-de-Aziz</code>, dans le dossier du projet. Chaque capture reprend la commande saisie et la sortie réellement obtenue.</p>
+
+<h3>5.1 Historique Git : une branche par phase, merges <code>--no-ff</code></h3>
+<figure><img class="shot" src="evidence/terminal-1.png"><figcaption>Capture 1 — <code>git log --graph --decorate --oneline -14</code>.</figcaption></figure>
+
+<h3>5.2 Versions, dépôt distant et workflows</h3>
+<figure><img class="shot" src="evidence/terminal-2.png"><figcaption>Capture 2 — Tags v0.1.0 à v1.1.0, remote GitHub et trois workflows (<code>ci.yml</code>, <code>cd.yml</code>, <code>deploy.yml</code>).</figcaption></figure>
+
+<h3 class="pb">5.3 Contrôles qualité : Pint, PHPStan, tests</h3>
+<figure><img class="shot" src="evidence/terminal-3.png"><figcaption>Capture 3 — Pint (154 fichiers conformes), PHPStan sans erreur, 111 tests et 548 assertions réussis.</figcaption></figure>
+
+<h3>5.4 Docker : validation Compose et build des deux images</h3>
+<figure><img class="shot" src="evidence/terminal-4.png"><figcaption>Capture 4 — <code>docker compose config</code> valide ; images <code>aquasecure-web</code> (83,1 Mo) et <code>aquasecure-app</code> (867 Mo) construites.</figcaption></figure>
+
+<h3>5.5 Docker : démarrage de la pile et healthchecks</h3>
+<figure><img class="shot" src="evidence/terminal-5.png"><figcaption>Capture 5 — Les six services sont <i>healthy</i> ; <code>/up</code> renvoie HTTP 200 et <code>/health</code> confirme l'état de la base de données.</figcaption></figure>
+
+<h3>5.6 Pipeline GitHub Actions sur <code>main</code></h3>
+<figure><img class="shot" src="evidence/terminal-6.png"><figcaption>Capture 6 — Le workflow CD du commit <code>13d7ee3</code> (qui exécute la CI puis publie les images) est terminé avec succès ; les mises à jour Dependabot sont aussi vertes.</figcaption></figure>
+
+<h2>6. Limites assumées</h2>
+<div class="note">
+<ul style="margin:0;padding-left:14pt">
+<li>La CI et la publication GHCR ont été exécutées sur GitHub avec succès pour le commit <code>13d7ee3</code> (capture 6).</li>
+<li>Le déploiement SSH vers staging et production n'est <b>pas activé</b> : il demande un serveur, les secrets SSH et <code>DEPLOY_ENABLED=true</code>. Il est décrit et validé syntaxiquement, mais n'a pas été exécuté.</li>
+<li>La pile Docker de validation a été lancée localement puis supprimée ; les captures 4 et 5 en sont la trace.</li>
+<li>Le rollback restaure les images, pas la base de données : toute migration destructive doit être vérifiée avant production.</li>
+</ul></div>
+
+<h2>7. Tableau critères / preuves</h2>
+<table>
+<tr><th>Exigence du sujet</th><th>Réalisation</th><th>Preuve</th></tr>
+<tr><td>Diagramme du processus DevOps</td><td>Boucle en 8 phases Dev / Ops</td><td>Figure 1, section 2</td></tr>
+<tr><td>Pipeline développement → CI → CD</td><td><code>ci.yml</code>, <code>cd.yml</code>, <code>deploy.yml</code></td><td>Figure 2, section 3, capture 6</td></tr>
+<tr><td>Intégration continue</td><td>Pint, PHPStan, 111 tests, audits, build Vite et Docker</td><td>Capture 3</td></tr>
+<tr><td>Conteneurisation</td><td>Images app et web, Compose, healthchecks</td><td>Captures 4 et 5</td></tr>
+<tr><td>Workflow Git</td><td>Branches par phase, merges <code>--no-ff</code>, tags sémantiques</td><td>Captures 1 et 2</td></tr>
+<tr><td>Déploiement</td><td>SSH staging puis production avec approbation</td><td>Section 3.2 (non exécuté en réel)</td></tr>
+</table>
+</body></html>

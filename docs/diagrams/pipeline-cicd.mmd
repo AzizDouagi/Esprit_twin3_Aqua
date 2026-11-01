@@ -1,0 +1,27 @@
+flowchart TB
+    subgraph DV["DEVELOPPEMENT"]
+        direction LR
+        DEV["Code local<br/>git switch -c feature/x<br/>hook pre-commit"] --> PR["Push + Pull request<br/>revue, template"]
+    end
+    subgraph CI["INTEGRATION CONTINUE : ci.yml"]
+        direction LR
+        Q["Job quality, PHP 8.2 et 8.3<br/>MySQL 8.4, Composer, migrate --seed<br/>Pint, PHPStan, PHPUnit + couverture<br/>Vite, composer audit, npm audit"]
+        I["Job images<br/>docker build app + web<br/>compose up --wait, /up, /health"]
+    end
+    DV --> CI
+    CI -->|"tout est vert"| MG["Merge --no-ff<br/>sur main + tag v*"]
+    subgraph CD["LIVRAISON ET DEPLOIEMENT : cd.yml"]
+        direction LR
+        PUB["Publication GHCR<br/>app + web : sha, semver, latest"]
+        STG["Staging (SSH)<br/>sauvegarde, migrate, up, smoke"]
+        PRD["Production (SSH)<br/>approbation d'environnement<br/>up, /health, smoke"]
+        PUB --> STG --> PRD
+    end
+    MG --> CD
+    PRD -. "echec : images precedentes" .-> RB["Rollback"]
+    classDef a fill:#e0f2fe,stroke:#0369a1,color:#0c4a6e
+    classDef b fill:#fef3c7,stroke:#b45309,color:#78350f
+    classDef c fill:#dcfce7,stroke:#15803d,color:#14532d
+    class DEV,PR a
+    class Q,I,MG b
+    class PUB,STG,PRD,RB c
