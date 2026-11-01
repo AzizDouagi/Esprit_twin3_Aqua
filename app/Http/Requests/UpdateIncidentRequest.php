@@ -3,9 +3,11 @@
 namespace App\Http\Requests;
 
 use App\Models\Incident;
+use App\Rules\ActiveTechnician;
 use Illuminate\Contracts\Validation\ValidationRule;
 use Illuminate\Foundation\Http\FormRequest;
 use Illuminate\Validation\Rule;
+use Illuminate\Validation\Validator;
 
 class UpdateIncidentRequest extends FormRequest
 {
@@ -31,9 +33,19 @@ class UpdateIncidentRequest extends FormRequest
             'gravite' => ['required', Rule::in(Incident::GRAVITES)],
             'statut' => ['required', Rule::in(Incident::STATUTS)],
             'date_incident' => ['required', 'date'],
-            'infrastructure_id' => ['required', 'exists:infrastructures,id'],
-            'technicien_id' => ['nullable', Rule::exists('users', 'id')->where('actif', true)],
+            'infrastructure_id' => ['required', Rule::exists('infrastructures', 'id')->whereNull('deleted_at')],
+            'technicien_id' => ['nullable', 'integer', new ActiveTechnician],
         ];
+    }
+
+    public function after(): array
+    {
+        return [function (Validator $validator): void {
+            $incident = $this->route('incident');
+            if ($incident instanceof Incident && $this->input('statut') !== $incident->statut && ! in_array($this->input('statut'), $incident->transitionsPossibles(), true)) {
+                $validator->errors()->add('statut', 'Transition de statut non autorisée. Utilisez les étapes du workflow.');
+            }
+        }];
     }
 
     public function messages(): array

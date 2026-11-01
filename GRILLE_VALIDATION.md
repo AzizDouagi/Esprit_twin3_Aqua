@@ -1,22 +1,32 @@
-# Grille de validation AquaSecure
+# Grille de validation AquaSecure — version finale
 
-| Critère | Points | Implémentation | Fichier(s) | Route / page | Comment démontrer |
-|---|---:|---|---|---|---|
-| Template FrontOffice | 0,5 | Layout public, accueil, liste et détail infrastructures | `resources/views/layouts/front.blade.php`, `resources/views/front/*` | `/`, `/infrastructures` | Ouvrir le FrontOffice |
-| Template BackOffice | 0,5 | Layout admin, navigation, dashboard, CRUD | `resources/views/layouts/admin.blade.php` | `/admin` | Ouvrir le BackOffice |
-| Héritage Blade | 1,5 | `@extends`, `@section`, `@yield`, `@include` | `resources/views/layouts/*`, vues CRUD | Toutes pages | Montrer le code Blade |
-| Personnalisation template | 1,5 | Identité AquaSecure, couleurs eau, menus adaptés | Layouts et vues | Front/Back | Montrer navigation et branding |
-| CRUD entité | 3 | CRUD complet Infrastructure et Incident | Contrôleurs + vues CRUD | `/admin/infrastructures`, `/admin/incidents` | Ajouter, voir, modifier, supprimer |
-| Validation serveur | 2 | Form Requests, règles métier, messages FR, `old()` | `app/Http/Requests/*`, formulaires | Create/edit | Soumettre un formulaire invalide |
-| Relations Eloquent | 2 | `hasMany`, `belongsTo`, choix infrastructure, affichages liés | `Infrastructure.php`, `Incident.php`, contrôleurs | Détail infrastructure, liste incidents | Créer un incident lié |
-| Factory / Seeder | 2 | 12 infrastructures, 37 incidents reliés | `database/factories/*`, `DatabaseSeeder.php` | Base seedée | Lancer `migrate:fresh --seed` |
-| Intégration collective | 1 | Projet cohérent et lançable sur une machine | Ensemble projet | Local | Montrer lancement complet |
-| Git | 3 | Dépôt initialisé, commits progressifs, `.env` ignoré | `.gitignore`, historique Git | Terminal | Montrer `git log --oneline` |
-| Démonstration | 1 | Scénario de 5 à 8 minutes | `DEMO_VALIDATION.md` | Terminal + navigateur | Suivre le déroulé |
-| Valeur ajoutée | 2 | Dashboard stats, filtres, recherche, badges, pagination | Dashboard, contrôleurs, vues | `/admin`, index CRUD | Filtrer et lire les stats |
+Correspondance avec la grille sur 20 déjà présente dans le projet. La décision du jury et les exigences collectives éventuelles priment sur cette auto-évaluation.
 
-## Auto-évaluation
+| Critère | Barème | Éléments livrés et preuve | Démonstration | Auto-évaluation |
+|---|---:|---|---|---:|
+| Template FrontOffice | 0,5 | Layout front, accueil, catalogue et carte | `/`, `/infrastructures`, `/carte` | 0,5 |
+| Template BackOffice | 0,5 | Layout admin, navigation par rôle, dashboard | `/admin` avec admin ou technicien | 0,5 |
+| Héritage Blade | 1,5 | Layouts `@yield`, vues `@extends`, composants `@include`, stacks | Montrer layouts/admin et incidents/show | 1,5 |
+| Personnalisation | 1,5 | Identité AquaSecure, FR, interfaces responsive, assets locaux | Captures desktop/390 px et menus | 1,5 |
+| CRUD entités | 3 | Infrastructure, Incident, maintenance ; corbeille infrastructure | Créer, lire, modifier, supprimer/restaurer | 3 |
+| Validation serveur | 2 | FormRequests, règles d’assignation et de workflow, policies | Soumission invalide ; API 422 ; user 403 | 2 |
+| Relations Eloquent | 2 | Infrastructure → incidents/mesures/maintenances ; incident → technicien, commentaires et pièces jointes | Incident lié, fiche infrastructure et historique | 2 |
+| Factory / Seeder | 2 | Comptes vérifiés, 12 infrastructures, 37 incidents, 14 maintenances, 2 892 mesures | Migration + seed sur base dédiée | 2 |
+| Intégration collective | 1 | Application intégrée, tests et documentation ; contribution collective non démontrée par cette session | Lancement reproductible + éléments de travail d’équipe à fournir si requis | 0,5 |
+| Git | 3 | Branches par phase, commits, merges --no-ff et tags locaux jusqu’à v1.0.0, .env ignoré | Graphe et tags ; publication distante encore à réaliser | 2,5 |
+| Démonstration | 1 | Scénario ~10 min, smoke HTTP et captures Chrome | Présentation orale effective encore à faire | 0,5 |
+| Valeur ajoutée | 2 | Fortify/2FA, API Sanctum, workflow, exports, notifications, IA, anomalies et chaîne DevOps | Deux parcours métier, classification, risque, preuves CI/CD | 2 |
+| **Total** | **20** | **Évaluation prudente sur preuves locales** | **Aucune note garantie** | **18,5** |
 
-Note probable : **19/20**.
+## Preuves complémentaires
 
-Le projet satisfait les critères majeurs : Laravel 12, CRUD complet sur deux entités, validation serveur, relation Eloquent utilisée, factories/seeders, FrontOffice, BackOffice, dashboard, filtres, tests et Git. Le point potentiellement discutable est l'absence d'authentification, volontairement non centrale car le module demandé ne doit pas reposer dessus.
+- Tests : 94 tests, 476 assertions, PHP 8.2 et PHP 8.5 ; PHPStan niveau 5 sans baseline ; Pint et build Vite verts. Résultats consolidés dans [docs/VALIDATION.md](docs/VALIDATION.md).
+- Authentification réelle : invité, utilisateur refusé sur `/admin`, admin connecté ; API avec token puis révocation ; classification, rapport PDF et chatbot fake via HTTP.
+- Chrome : contrôles à 390 et 1440 px, menus, carte, graphiques et préremplissage ; captures dans `docs/evidence/`.
+- DevOps : Compose valide, workflows parsés/actionlint, Mermaid en PNG/SVG et PDF DevOps généré.
+
+## Réserves explicites
+
+Docker build/up, la CI GitHub/MySQL, la publication GHCR et le déploiement SSH n’ont pas été exécutés ici. Le daemon Docker est arrêté. Anthropic réel nécessite une clé et un contrôle de disponibilité du modèle ; le fake reste un système de règles et gabarits, pas une preuve de qualité d’un modèle génératif. Le score de risque est une heuristique non calibrée terrain. Pas de pourcentage de couverture locale annoncé. Aucun push de branches/tags. Le bonus de doublons Jaccard n’est pas livré.
+
+L’ancienne mention « absence d’authentification » est obsolète : Fortify, profils, vérification, rôles, policies et 2FA sont présents et testés. Les fonctions supplémentaires renforcent le projet sans augmenter artificiellement le barème sur 20.

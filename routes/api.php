@@ -9,7 +9,7 @@ use Illuminate\Support\Facades\Route;
 Route::prefix('v1')->name('api.v1.')->group(function (): void {
     Route::post('auth/token', [AuthController::class, 'token'])->middleware('throttle:10,1')->name('auth.token');
 
-    Route::middleware(['auth:sanctum', 'throttle:120,1'])->group(function (): void {
+    Route::middleware(['auth:sanctum', 'account.active', 'verified', 'throttle:120,1'])->group(function (): void {
         Route::delete('auth/token', [AuthController::class, 'revoke'])->name('auth.revoke');
         Route::get('me', [AuthController::class, 'me'])->name('me');
 

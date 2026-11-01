@@ -2,15 +2,15 @@
 
 namespace App\Http\Controllers;
 
+use App\Http\Requests\IncidentFilterRequest;
 use App\Models\Incident;
 use Barryvdh\DomPDF\Facade\Pdf;
-use Illuminate\Http\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\HttpFoundation\StreamedResponse;
 
 class IncidentExportController extends Controller
 {
-    public function csv(Request $request): StreamedResponse
+    public function csv(IncidentFilterRequest $request): StreamedResponse
     {
         $this->authorize('viewAny', Incident::class);
 
@@ -29,7 +29,7 @@ class IncidentExportController extends Controller
         }, 'incidents-'.now()->format('Ymd').'.csv', ['Content-Type' => 'text/csv; charset=UTF-8']);
     }
 
-    public function pdf(Request $request): Response
+    public function pdf(IncidentFilterRequest $request): Response
     {
         $this->authorize('viewAny', Incident::class);
 
@@ -38,7 +38,7 @@ class IncidentExportController extends Controller
             ->download('incidents-'.now()->format('Ymd').'.pdf');
     }
 
-    private function liste(Request $request)
+    private function liste(IncidentFilterRequest $request)
     {
         return Incident::with(['infrastructure', 'technicien'])
             ->filtrer($request->only(IncidentController::FILTRES))

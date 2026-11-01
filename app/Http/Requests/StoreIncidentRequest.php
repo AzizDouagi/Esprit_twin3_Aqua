@@ -3,6 +3,7 @@
 namespace App\Http\Requests;
 
 use App\Models\Incident;
+use App\Rules\ActiveTechnician;
 use Illuminate\Contracts\Validation\ValidationRule;
 use Illuminate\Foundation\Http\FormRequest;
 use Illuminate\Validation\Rule;
@@ -29,10 +30,10 @@ class StoreIncidentRequest extends FormRequest
             'description' => ['required', 'string', 'max:2500'],
             'type' => ['required', Rule::in(Incident::TYPES)],
             'gravite' => ['required', Rule::in(Incident::GRAVITES)],
-            'statut' => ['required', Rule::in(Incident::STATUTS)],
+            'statut' => ['required', Rule::in($this->user()->can('incidents.manage') ? Incident::STATUTS : ['Ouvert'])],
             'date_incident' => ['required', 'date'],
-            'infrastructure_id' => ['required', 'exists:infrastructures,id'],
-            'technicien_id' => ['nullable', Rule::exists('users', 'id')->where('actif', true)],
+            'infrastructure_id' => ['required', Rule::exists('infrastructures', 'id')->whereNull('deleted_at')],
+            'technicien_id' => $this->user()->can('incidents.manage') ? ['nullable', 'integer', new ActiveTechnician] : ['prohibited'],
         ];
     }
 

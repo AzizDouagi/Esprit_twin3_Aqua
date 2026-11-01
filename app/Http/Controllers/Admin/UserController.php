@@ -44,6 +44,9 @@ class UserController extends Controller
         }
 
         $user->update(['actif' => ! $user->actif]);
+        if (! $user->actif) {
+            $user->tokens()->delete();
+        }
 
         return back()->with('success', $user->actif ? 'Compte activé.' : 'Compte désactivé.');
     }

@@ -1,6 +1,7 @@
 <?php
 
 use App\Exceptions\AiException;
+use App\Http\Middleware\EnsureAccountIsActive;
 use Illuminate\Foundation\Application;
 use Illuminate\Foundation\Configuration\Exceptions;
 use Illuminate\Foundation\Configuration\Middleware;
@@ -17,7 +18,9 @@ return Application::configure(basePath: dirname(__DIR__))
         health: '/up',
     )
     ->withMiddleware(function (Middleware $middleware): void {
+        $middleware->appendToGroup('web', EnsureAccountIsActive::class);
         $middleware->alias([
+            'account.active' => EnsureAccountIsActive::class,
             'role' => RoleMiddleware::class,
             'permission' => PermissionMiddleware::class,
             'role_or_permission' => RoleOrPermissionMiddleware::class,
@@ -25,7 +28,7 @@ return Application::configure(basePath: dirname(__DIR__))
     })
     ->withExceptions(function (Exceptions $exceptions): void {
         $exceptions->render(function (AiException $e, Request $request) {
-            return $request->expectsJson() ? response()->json(['message' => $e->getMessage()], $e->getCode()) : response()->view('errors.503', [], $e->getCode());
+            return $request->expectsJson() ? response()->json(['message' => $e->getMessage()], $e->getCode()) : response()->view($e->getCode() === 429 ? 'errors.429' : 'errors.503', [], $e->getCode());
         });
         $exceptions->shouldRenderJsonWhen(fn ($request, $e) => $request->is('api/*') || $request->expectsJson());
     })->create();
