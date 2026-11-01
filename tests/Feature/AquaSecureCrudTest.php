@@ -63,7 +63,7 @@ class AquaSecureCrudTest extends TestCase
         $this->delete(route('infrastructures.destroy', $infrastructure))
             ->assertRedirect(route('infrastructures.index'));
 
-        $this->assertDatabaseMissing('infrastructures', ['id' => $infrastructure->id]);
+        $this->assertSoftDeleted('infrastructures', ['id' => $infrastructure->id]);
     }
 
     public function test_incident_crud_flow_and_relation(): void
