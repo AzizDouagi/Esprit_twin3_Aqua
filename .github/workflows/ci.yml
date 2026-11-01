@@ -45,7 +45,7 @@ jobs:
           extensions: mbstring, intl, pdo_mysql, pdo_sqlite, gd, zip, bcmath
           coverage: xdebug
           tools: composer:v2
-      - uses: actions/cache@v4
+      - uses: actions/cache@v6
         with:
           path: ~/.cache/composer/files
           key: composer-${{ runner.os }}-${{ matrix.php }}-${{ hashFiles('composer.lock') }}
